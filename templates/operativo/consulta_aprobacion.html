@@ -1,0 +1,227 @@
+{% extends 'navbar.html' %}
+
+{% block content %}
+
+
+<div class="container mt-4">
+    <!-- Encabezado -->
+    <div class="card border-secondary">
+        <div class="card-header text-dark d-flex " style="background-color: #f5ea41">
+            <h5 class="mb-0">Créditos</h5>
+        </div>
+        
+        <div class="card-body">
+            <!-- Aprobación -->
+            <div class="mb-3">
+                <h6>Aprobación</h6>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="consulta">
+                    <label class="form-check-label" for="consulta">Consulta</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="nroSolicitud">
+                    <label class="form-check-label" for="nroSolicitud">Nro. Solicitud</label>
+                </div>
+            </div>
+
+            <!-- Tabla de Aprobación -->
+            <div class="table-responsive mb-3">
+                <table class="table table-bordered table-striped text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>NOMBRES</th>
+                            <th>IDENTIFICACION</th>
+                            <th>Aprobar</th>
+                            <th>Anular</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Juan Pérez</td>
+                            <td>1234567890</td>
+                            <td><button class="btn btn-success">Aprobar</button></td>
+                            <td><button class="btn btn-danger">Anular</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Tabla de Créditos -->
+            <div class="table-responsive mb-3">
+                <table class="table table-bordered table-striped text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>NCREDITO</th>
+                            <th>MONTO</th>
+                            <th>SALDO</th>
+                            <th>ESTA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>001</td>
+                            <td>5000.00</td>
+                            <td>2000.00</td>
+                            <td>Activo</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Detalles del Crédito -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="nombres" class="form-label">Nombres</label>
+                    <input type="text" id="nombres" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label for="nroCedula" class="form-label">Nro. Cédula</label>
+                    <input type="text" id="nroCedula" class="form-control">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="noSocio" class="form-label">No. Socio</label>
+                    <input type="text" id="noSocio" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label for="tInteres" class="form-label">T Interés</label>
+                    <input type="text" id="tInteres" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label for="formaPago" class="form-label">Forma de Pago</label>
+                    <input type="text" id="formaPago" class="form-control">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="tipoCredito" class="form-label">Tipo Crédito</label>
+                    <input type="text" id="tipoCredito" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label for="monto" class="form-label">Monto</label>
+                    <input type="text" id="monto" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label for="cuotas" class="form-label">Cuotas</label>
+                    <input type="text" id="cuotas" class="form-control">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="tipoTabla" class="form-label">Tipo Tabla</label>
+                    <input type="text" id="tipoTabla" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label for="destino" class="form-label">Destino</label>
+                    <input type="text" id="destino" class="form-control" value="FRANCESA">
+                </div>
+                <div class="col-md-4">
+                    <label for="gracia" class="form-label">Gracia</label>
+                    <input type="text" id="gracia" class="form-control">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="saldo" class="form-label">Saldo</label>
+                    <input type="text" id="saldo" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label for="estado" class="form-label">Estado</label>
+                    <input type="text" id="estado" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label for="fUltPago" class="form-label">F. Ult. Pago</label>
+                    <input type="text" id="fUltPago" class="form-control">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="nombresGarante" class="form-label">Nombres Garante</label>
+                    <input type="text" id="nombresGarante" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label for="porcentajePagado" class="form-label">% Pagado</label>
+                    <input type="text" id="porcentajePagado" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label for="tCancela" class="form-label">T.Cancela</label>
+                    <input type="text" id="tCancela" class="form-control">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="renovar" class="form-label">Renovar</label>
+                    <input type="text" id="renovar" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="mantenerCuota">
+                        <label class="form-check-label" for="mantenerCuota">Mantener Cuota</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="disminuirCuota">
+                        <label class="form-check-label" for="disminuirCuota">Disminuir Cuota</label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-primary">Cambiar</button>
+                </div>
+            </div>
+
+            <!-- Opciones adicionales -->
+            <div class="mb-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="tAmortizacion">
+                    <label class="form-check-label" for="tAmortizacion">T.Amortización</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="tPagos">
+                    <label class="form-check-label" for="tPagos">T.Pagos</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="consultar">
+                    <label class="form-check-label" for="consultar">Consultar</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="imprimir">
+                    <label class="form-check-label" for="imprimir">Imprimir</label>
+                </div>
+            </div>
+
+            <!-- Tabla de Dividendos -->
+            <div class="table-responsive mb-3">
+                <table class="table table-bordered table-striped text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>DIVIDENDO</th>
+                            <th>FECHA VENCE</th>
+                            <th>CAPITAL</th>
+                            <th>INTERÉS</th>
+                            <th>SA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>2023-10-01</td>
+                            <td>100.00</td>
+                            <td>10.00</td>
+                            <td>90.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+{% endblock %}

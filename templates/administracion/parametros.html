@@ -1,0 +1,147 @@
+{% extends 'navbar.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-4">
+    <!-- Encabezado -->
+    <div class="card ">
+        <div class="card-custom-header  d-flex ">
+            <h4 class="mb-0">Registro de Parámetros</h4>
+        </div>
+
+        <div class="card-body">
+
+            {% if messages %}
+            <div>
+                {% for message in messages %}
+                <div
+                    class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'warning' %}alert-warning{% else %}alert-success{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+                <div class="border rounded p-3 mb-3">
+                    <!-- Formulario -->
+                    <div class="row mb-3">
+                        <div class="col-3 col-sm-3">
+                            <label for="parm_abreviatura" class="form-label">Abreviatura</label>
+                            <input type="text" id="parm_abreviatura" name="parm_abreviatura" class="form-control"
+                                onkeyup="this.value=this.value.toUpperCase()" required>
+                        </div>
+                        <div class="col-sm-5">
+                            <label for="parm_descripcion" class="form-label">Descripcion</label>
+                            <input type="text" id="parm_descripcion" name="parm_descripcion" class="form-control"
+                                required>
+                        </div>
+                        <div class="col-sm-2">
+                            <label for="parm_valor" class="form-label">Valor</label>
+                            <input type="text" id="parm_valor" name="parm_valor" class="form-control" required>
+                        </div>
+                        <div class="col-sm-2  align-self-end">
+                            <div class="form-check">
+                                <input class="form-check-input" name="parm_estado" type="checkbox" id="parm_estado">
+                                <label class="form-check-label" for="parm_estado">Estado</label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Botones -->
+                <div class="d-flex justify-content-end gap-2">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <button type="reset" class="btn btn-secondary">Limpiar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tabla -->
+        <div class="table-responsive px-3 pb-3">
+            <table
+                class="table table-bordered table-hover table-striped rounded overflow-hidden align-middle text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>PARAMETRO</th>
+                        <th>DESCRIPCIÓN</th>
+                        <th>VALOR</th>
+                        <th>ESTADO</th>
+                        <th>ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for parametro in parametros %}
+                    <tr>
+                        <td>{{ parametro.parm_abreviatura }}</td>
+                        <td>{{ parametro.parm_descripcion }}</td>
+                        <td>{{ parametro.parm_valor }}</td>
+                        <td>{{ parametro.parm_estado|yesno:"Activo,Inactivo" }}</td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-outline-primary me-1 btn-action-edit-parm"
+                                title="Editar" data-id="{{ parametro.id }}"
+                                data-abreviatura="{{ parametro.parm_abreviatura }}"
+                                data-descripcion="{{ parametro.parm_descripcion }}"
+                                data-valor="{{ parametro.parm_valor }}" data-estado="{{ parametro.parm_estado }}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger btn-action-delete-parm"
+                                title="Eliminar" data-id="{{ parametro.id }}">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">No hay datos disponibles.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Parámetro -->
+<div class="modal fade" id="modalEditarParametro" tabindex="-1" aria-labelledby="modalEditarParametroLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="post" id="formEditarParametro">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEditarParametroLabel">Editar Parámetro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="edit_id">
+                    <div class="mb-3">
+                        <label for="edit_abreviatura" class="form-label">Abreviatura</label>
+                        <input type="text" class="form-control" id="edit_abreviatura" name="parm_abreviatura" required
+                            onkeyup="this.value=this.value.toUpperCase()">
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_descripcion" class="form-label">Descripción</label>
+                        <input type="text" class="form-control" id="edit_descripcion" name="parm_descripcion" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_valor" class="form-label">Valor</label>
+                        <input type="text" class="form-control" id="edit_valor" name="parm_valor" required>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="edit_estado" name="parm_estado">
+                        <label class="form-check-label" for="edit_estado">Activo</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

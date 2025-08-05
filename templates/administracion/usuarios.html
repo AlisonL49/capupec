@@ -1,0 +1,122 @@
+{% extends 'navbar.html' %}
+
+{% block content %}
+
+
+
+<div class="container mt-4">
+
+    <div class="card border-secondary">
+        <div class="card-header text-dark d-flex " style="background-color: #f5ea41">
+            <h4 class="mb-0">Registro de Usuarios</h4>
+        </div>
+
+        <div class="border rounded p-3 shadow-sm bg-light">
+
+            {% if messages %}
+            <div>
+                {% for message in messages %}
+                <div
+                    class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'warning' %}alert-warning{% else %}alert-success{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+
+
+            <form method="POST">
+                {% csrf_token %}
+                <!-- Sección de Datos -->
+                <div class="border rounded p-3 mb-3">
+                    <h5>Datos</h5>
+                    <div class="row mb-2">
+                        <div class="col-md-4">
+                            <label for="username" class="form-label">Usuario</label>
+                            <!--{{ form.username }}-->
+                            <input type="text" class="form-control" name="username" id="username" required>
+                        </div>
+                        <div class="col-md-8">
+                            <label for="nombres" class="form-label">Apellidos y Nombres</label>
+                            <!--{{ form.nombres }}-->
+                            <input type="text" class="form-control" id="nombres" name="nombres" required>
+                        </div>
+                    </div>
+                    <div class="row">
+
+                        <div class="col-md-5 d-flex align-items-center offset-md-4">
+                            <label for="rol" class="form-label">Rol: </label>
+                            
+                            <select class="form-select {% if form.rol.errors %}is-invalid{% endif %}" id="id_rol"
+                                name="rol" required>
+                                <option value="" disabled selected>Selecciona un rol</option>
+                                {% for rol in roles %}
+                                <option value="{{ rol.id }}">{{ rol.rol_nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-center">
+                            <!--{{ form.estado }}-->
+                            <input type="checkbox" class="form-check-input me-2" id="estado" name="estado">
+                            <label for="estado" class="form-check-label">Estado</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de Contraseña con Toggle -->
+                <div class="border rounded p-3 mb-3">
+                    <h5>Seguridad</h5>
+                    <div class="row">
+                        <div class="col-md-6 position-relative">
+                            <label for="password1" class="form-label fw-bold">Contraseña</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="password1" name="password1" required>
+                                <button class="btn btn-outline-secondary toggle-password" type="button"
+                                    onclick="togglePassword('password1', 'toggleIcon1')">
+                                    <i id="toggleIcon1" class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6 position-relative">
+                            <label for="password2" class="form-label fw-bold">Confirmar Contraseña</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="password2" name="password2" required>
+                                <button class="btn btn-outline-secondary toggle-password" type="button"
+                                    onclick="togglePassword('password2', 'toggleIcon2')">
+                                    <i id="toggleIcon2" class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <button type="reset" class="btn btn-secondary">Limpiar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Script para el Toggle de Contraseña -->
+<script>
+    function togglePassword(inputId, iconId) {
+        let input = document.getElementById(inputId);
+        let icon = document.getElementById(iconId);
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.replace("fa-eye", "fa-eye-slash");
+        } else {
+            input.type = "password";
+            icon.classList.replace("fa-eye-slash", "fa-eye");
+        }
+    }
+</script>
+
+<!-- FontAwesome para los iconos -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+{% endblock %}

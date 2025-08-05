@@ -1,0 +1,404 @@
+{% extends 'navbar.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container mt-4">
+    <!-- Encabezado -->
+    <div class="card">
+        <div class="card-custom-header d-flex">
+            <h5 class="mb-0">Registro de Socios</h5>
+        </div>
+
+        <div class="card-body">
+            <!-- Mensajes de error -->
+            {% if messages %}
+            <div>
+                {% for message in messages %}
+                <div
+                    class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'warning' %}alert-warning{% else %}alert-success{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="POST" id="registro-form">
+                {% csrf_token %}
+                <div class="border rounded p-3 mb-3">
+                    <!-- Formulario -->
+                    <div class="row mb-4">
+                        <h5 class="mb-3">Información Personal</h5>
+                        <div class="col-md-5">
+                            <label for="last_name" class="form-label">Apellidos</label>
+                            <input type="text" id="last_name" name="last_name" class="form-control" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="first_name" class="form-label">Nombres</label>
+                            <input type="text" id="first_name" name="first_name" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="fecha_nacimiento" class="form-label">Fecha Nacimiento</label>
+                            <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" class="form-control"
+                                required>
+                        </div>
+
+                    </div>
+                    <div class="row mb-3">
+
+                        <div class="col-md-3">
+                            <label for="cedula" class="form-label">No. Cédula</label>
+                            <input type="text" id="cedula" name="cedula" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="fecha_caducidad" class="form-label">Caducidad Cédula</label>
+                            <input type="date" id="fecha_caducidad" name="fecha_caducidad" class="form-control"
+                                required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Género </label>
+                            <div class="d-flex border rounded p-2">
+                                <div class="form-check me-3">
+                                    <input class="form-check-input" type="radio" name="genero" id="masculino" value="M">
+                                    <label class="form-check-label " for="masculino">Masculino</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="genero" id="femenino" value="F">
+                                    <label class="form-check-label " for="femenino">Femenino</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="estado_civil" class="form-label">Estado Civil</label>
+                            <select id="estado_civil" name="estado_civil" class="form-select" required>
+                                <option value="" disabled selected>Seleccione... </option>
+                                {% for estado in estado_civil %}
+                                <option value="{{ estado.id }}">{{ estado.estado_civil }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <label for="telefono" class="form-label">Teléfono</label>
+                            <input type="text" id="telefono" name="telefono" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Correo Electrónico</label>
+                            <input type="email" id="email" name="email" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="rol" class="form-label">Rol del usuari</label>
+                            <select class="form-select {% if form.rol.errors %}is-invalid{% endif %}" id="id_rol"
+                                name="rol" required>
+                                <option value="" disabled selected>Seleccione... </option>
+                                {% for rol in roles %}
+                                <option value="{{ rol.id }}">{{ rol.rol_nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <h5 class="mb-3 mt-4"> Informacion Laboral </h5>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="trabajo" class="form-label">Lugar de Trabajo/Carrera</label>
+                            <input type="text" id="trabajo" name="lugar_trabajo" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="fecha_ingreso" class="form-label">Fecha de Ingreso</label>
+                            <input type="date" id="fecha_ingreso" name="fecha_ingreso" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Tipo de nombramiento</label>
+                            <div class="d-flex border rounded p-2">
+                                <div class="form-check me-3">
+                                    <input class="form-check-input" type="radio" name="nombramiento" id="titular"
+                                        value="Titular" required>
+                                    <label class="form-check-label" for="titular">Titular</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="nombramiento" id="acontrato"
+                                        value="Contrato" required>
+                                    <label class="form-check-label" for="acontrato">A Contrato</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-2">
+                            <label for="ciudad" class="form-label">Ciudad</label>
+                            <input type="text" id="ciudad" name="ciudad" class="form-control" required>
+                        </div>
+                        <div class="col-md-5">
+                            <label for="direccion" class="form-label">Dirección</label>
+                            <input type="text" id="direccion" name="direccion" class="form-control" required>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="estado" name="estado">
+                                <label class="form-check-label" for="estado">Estado</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                        <button type="reset" class="btn btn-secondary">Limpiar</button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="border rounded p-3 mb-3">
+                <div class="d-flex justify-content-between align-items-center ">
+                    <div class="col-lg-10 mt-4">
+                        {% include 'partials/formulario_busqueda.html' %}
+                    </div>
+                    <div>
+                        <a href="{% url 'reporte_socios_pdf' %}" target="_blank" class="btn btn-success">
+                            <i class="fas fa-print"></i>
+                            <span class="d-none d-sm-inline"> Reporte</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Tabla -->
+                <div class="table-responsive mb-3">
+                    <table class="table table-bordered table-hover rounded overflow-hidden align-middle text-center">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>APELLIDOS</th>
+                                <th>NOMBRES</th>
+                                <th>IDENTIFICACIÓN</th>
+                                <th>TIPO</th>
+                                <th>NOMBRAMIENTO</th>
+                                <th>LUGAR DE TRABAJO</th>
+                                <th>TELÉFONO</th>
+                                <th>CORREO ELECTRÓNICO</th>
+                                <th>ESTADO</th>
+                                <th>ACCIONES</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for perfil in perfiles %}
+                            <tr>
+                                <td>{{ perfil.user.last_name }}</td>
+                                <td>{{ perfil.user.first_name }}</td>
+                                <td>{{ perfil.cedula }}</td>
+                                <td>{{ perfil.rol.rol_nombre }}</td>
+                                <td>{{ perfil.nombramiento }}</td>
+                                <td>{{ perfil.lugar_trabajo }}</td>
+                                <td>{{ perfil.telefono }}</td>
+                                <td>{{ perfil.user.email }}</td>
+                                <td>{{ perfil.estado|yesno:"Activo,Inactivo" }}</td>
+                                <td>
+                                    <button type="button"
+                                        class="btn btn-sm btn-outline-primary me-1 btn-action-edit-socio"
+                                        title="Editar"
+                                        data-id="{{ perfil.id }}"
+                                        data-apellidos="{{ perfil.user.last_name }}"
+                                        data-nombres="{{ perfil.user.first_name }}"
+                                        data-estado_civil="{{ perfil.estado_civil.id }}"
+                                        data-fecha_nacimiento="{{ perfil.fecha_nacimiento|date:'Y-m-d' }}"
+                                        data-cedula="{{ perfil.cedula }}"
+                                        data-fecha_caducidad="{{ perfil.fecha_caducidad|date:'Y-m-d' }}"
+                                        data-genero="{{ perfil.genero }}"
+                                        data-telefono="{{ perfil.telefono }}"
+                                        data-email="{{ perfil.user.email }}"
+                                        data-rol="{{ perfil.rol.id }}"
+                                        data-trabajo="{{ perfil.lugar_trabajo }}"
+                                        data-fecha_ingreso="{{ perfil.fecha_ingreso|date:'Y-m-d' }}"
+                                        data-nombramiento="{{ perfil.nombramiento }}" 
+                                        data-ciudad="{{ perfil.ciudad }}"
+                                        data-direccion="{{ perfil.direccion }}"
+                                        data-estado="{{ perfil.estado|yesno:'true,false' }}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger btn-action-delete-socio"
+                                        title="Eliminar" data-id="{{ perfil.id }}"
+                                        data-nombre="{{ perfil.user.first_name }} {{ perfil.user.last_name }}">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="10">
+                                    {% if search_query %}
+                                    No se encontraron socios con "{{ search_query }}"
+                                    {% else %}
+                                    No hay socios registrados
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal para editar socio -->
+    <div class="modal fade" id="editSocioModal" tabindex="-1" aria-labelledby="editSocioModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editSocioModalLabel">Editar Socio</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="edit-socio-form" method="POST">
+                {% csrf_token %}
+                <input type="hidden" id="edit-socio_id" name="socio_id">
+                <input type="hidden" name="action" value="edit">
+                <div class="modal-body">
+                    <div class="row mb-4">
+                        <div class="col-md-5">
+                            <label for="edit-last_name" class="form-label">Apellidos</label>
+                            <input type="text" id="edit-last_name" name="last_name" class="form-control" required>
+                        </div>
+                        <div class="col-md-5">
+                            <label for="edit-first_name" class="form-label">Nombres</label>
+                            <input type="text" id="edit-first_name" name="first_name" class="form-control" required>
+                        </div>
+                            <div class="col-md-2">
+                                <label for="edit-estado_civil" class="form-label">Estado Civil</label>
+                                <select id="edit-estado_civil" name="estado_civil" class="form-select" required>
+                                    <option value="" disabled>Seleccione... </option>
+                                    {% for estado in estado_civil %}
+                                    <option value="{{ estado.id }}">{{ estado.estado_civil }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="edit-fecha_nacimiento" class="form-label">Fecha Nacimiento</label>
+                                <input type="date" id="edit-fecha_nacimiento" name="fecha_nacimiento"
+                                    class="form-control" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="edit-cedula" class="form-label">No. Cédula</label>
+                                <input type="text" id="edit-cedula" name="cedula" class="form-control" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="edit-fecha_caducidad" class="form-label">Caducidad Cédula</label>
+                                <input type="date" id="edit-fecha_caducidad" name="fecha_caducidad" class="form-control"
+                                    required>
+                            </div>
+                            <div class="col-md-3"> 
+                                <label class="form-label">Género</label>
+                                <div class="d-flex border rounded p-2">
+                                    <div class="form-check me-3">
+                                        <input class="form-check-input" type="radio" name="genero" id="edit-masculino"
+                                            value="M">
+                                        <label class="form-check-label" for="edit-masculino">Masculino</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="genero" id="edit-femenino"
+                                            value="F">
+                                        <label class="form-check-label" for="edit-femenino">Femenino</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="edit-telefono" class="form-label">Teléfono</label>
+                                <input type="text" id="edit-telefono" name="telefono" class="form-control" required>
+                            </div>
+                            <div class="col-md-5">
+                                <label for="edit-email" class="form-label">Correo Electrónico</label>
+                                <input type="email" id="edit-email" name="email" class="form-control" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="edit-rol" class="form-label">Rol del usuario</label>
+                                <select class="form-select" id="edit-rol" name="rol" required>
+                                    <option value="" disabled>Seleccione... </option>
+                                    {% for rol in roles %}
+                                    <option value="{{ rol.id }}">{{ rol.rol_nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <h5 class="mb-3">Información Laboral</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="edit-trabajo" class="form-label">Lugar de Trabajo/Carrera</label>
+                                <input type="text" id="edit-trabajo" name="lugar_trabajo" class="form-control" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="edit-fecha_ingreso" class="form-label">Fecha de Ingreso</label>
+                                <input type="date" id="edit-fecha_ingreso" name="fecha_ingreso" class="form-control"
+                                    required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Tipo de nombramiento</label>
+                                <div class="d-flex border rounded p-2">
+                                    <div class="form-check me-3">
+                                        <input class="form-check-input" type="radio" name="nombramiento"
+                                            id="edit-titular" value="Titular" required>
+                                        <label class="form-check-label" for="edit-titular">Titular</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="nombramiento"
+                                            id="edit-acontrato" value="Contrato" required>
+                                        <label class="form-check-label" for="edit-acontrato">A Contrato</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-2">
+                                <label for="edit-ciudad" class="form-label">Ciudad</label>
+                                <input type="text" id="edit-ciudad" name="ciudad" class="form-control" required>
+                            </div>
+                            <div class="col-md-5">
+                                <label for="edit-direccion" class="form-label">Dirección</label>
+                                <input type="text" id="edit-direccion" name="direccion" class="form-control" required>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="edit-estado" name="estado">
+                                    <label class="form-check-label" for="edit-estado">Estado</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación para eliminar -->
+    <div class="modal fade" id="deleteSocioModal" tabindex="-1" aria-labelledby="deleteSocioModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteSocioModalLabel">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Está seguro que desea eliminar al socio <strong id="delete-socio-name"></strong>?</p>
+                    <p class="text-danger">Esta acción no se puede deshacer.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form id="delete-socio-form" method="POST" style="display: inline;">
+                        {% csrf_token %}
+                        <input type="hidden" id="delete-socio-id" name="socio_id">
+                        <input type="hidden" name="action" value="delete">
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

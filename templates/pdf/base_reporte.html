@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ titulo_documento|default:"Reporte CAPUPEC" }}</title>
+    <style>
+        {% load static %}
+        {% include 'pdf/partials/styles.html' %}
+    </style>
+</head>
+<body>
+    <!-- Encabezado -->
+    {% include 'pdf/partials/header.html' %}
+    
+    <!-- Contenido específico del reporte -->
+    {% block contenido_reporte %}
+    <!-- El contenido específico de cada reporte va aquí -->
+    {% endblock %}
+    
+    <!-- Firmas -->
+    {% include 'pdf/partials/firmas.html' %}
+    
+    <!-- Footer -->
+    {% include 'pdf/partials/footer.html' %}
+</body>
+</html>

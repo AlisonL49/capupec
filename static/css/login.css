@@ -1,0 +1,102 @@
+/* Estilos generales */
+.login-container {
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+
+.login-image {
+    background-image: url('https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-4.0.3');
+    background-size: cover;
+    background-position: center;
+    min-height: 600px;
+}
+
+.login-form {
+    padding: 3rem;
+    border-radius: 24px;
+    background: #cde3f7;
+    border: 1px solid rgba(52, 152, 219, 0.103);
+}
+
+/* Textos y tipografía */
+.login-title {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+}
+
+.login-subtitle {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #495057;
+}
+
+.text-muted {
+    color: #95a5a6 !important;
+}
+
+/* Campos del formulario */
+.form-control {
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+    padding: 0.75rem 1rem;
+}
+
+.form-control:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+}
+
+/* Checkbox personalizado */
+.form-check-input {
+    cursor: pointer;
+}
+
+.form-check-label {
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #7f8c8d;
+}
+
+/* Enlaces */
+.forgot-link {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.forgot-link:hover {
+    color: #3498db;
+    text-decoration: none;
+}
+
+/* Botón de login */
+.login-btn {
+    background-color: #3498db;
+    color: white;
+    border-radius: 5px;
+    font-weight: 500;
+    border: none;
+    padding: 0.75rem;
+    transition: background-color 0.3s;
+}
+
+.login-btn:hover {
+    background-color: #2980b9;
+    color: white;
+}
+
+/* Mensajes de error */
+.alert-danger {
+    font-size: 0.9rem;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+}

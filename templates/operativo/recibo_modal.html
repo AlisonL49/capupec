@@ -1,0 +1,190 @@
+<div class="recibo-container">
+    <style>
+        .recibo-container {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.4;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .recibo-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 20px;
+        }
+        
+        .company-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #0066cc;
+            margin: 10px 0 5px 0;
+        }
+        
+        .company-info {
+            font-size: 12px;
+            color: #666;
+            margin: 5px 0;
+        }
+        
+        .document-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #0066cc;
+            margin: 20px 0;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        
+        .recibo-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 5px 0;
+            border-bottom: 1px dotted #ddd;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #555;
+            width: 40%;
+        }
+        
+        .info-value {
+            color: #333;
+            width: 55%;
+            text-align: right;
+        }
+        
+        .amount-section {
+            background-color: #e8f4fd;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #0066cc;
+        }
+        
+        .amount-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .amount-label {
+            font-weight: bold;
+            color: #0066cc;
+        }
+        
+        .amount-value {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .total-row {
+            border-top: 2px solid #0066cc;
+            padding-top: 10px;
+            margin-top: 15px;
+            font-size: 16px;
+        }
+        
+        .note-section {
+            margin: 30px 0;
+            padding: 15px;
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .note-text {
+            margin: 0;
+            font-size: 12px;
+            color: #856404;
+        }
+    </style>
+    
+    <div class="recibo-header">
+        <div class="company-name">
+            {% if representantes %}
+                {{ representantes.rep_nombre_cooperativa|upper }}
+            {% else %}
+                COOPERATIVA DE AHORRO Y CRÉDITO CAPUPEC
+            {% endif %}
+        </div>
+        
+        {% if representantes %}
+            <div class="company-info">{{ representantes.rep_direccion }}</div>
+            <div class="company-info">Teléfono: {{ representantes.rep_telefono }} | Email: {{ representantes.rep_email }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="document-title">
+        RECIBO DE APORTE A CUENTA DE AHORROS
+    </div>
+    
+    <div class="recibo-info">
+        <div class="info-row">
+            <span class="info-label">Fecha y Hora:</span>
+            <span class="info-value">{{ fecha_aporte }}</span>
+        </div>
+        
+        <div class="info-row">
+            <span class="info-label">ID del Socio:</span>
+            <span class="info-value">{{ socio_id }}</span>
+        </div>
+        
+        <div class="info-row">
+            <span class="info-label">Cédula:</span>
+            <span class="info-value">{{ socio_cedula }}</span>
+        </div>
+        
+        <div class="info-row">
+            <span class="info-label">Nombres Completos:</span>
+            <span class="info-value">{{ socio_nombre }}</span>
+        </div>
+        
+        <div class="info-row">
+            <span class="info-label">Nombramiento:</span>
+            <span class="info-value">{{ socio_nombramiento }}</span>
+        </div>
+        
+        <div class="info-row">
+            <span class="info-label">Lugar de Trabajo:</span>
+            <span class="info-value">{{ socio_lugar_trabajo }}</span>
+        </div>
+    </div>
+    
+    <div class="amount-section">
+        <div class="amount-row">
+            <span class="amount-label">Saldo Anterior:</span>
+            <span class="amount-value">${{ saldo_anterior|floatformat:2 }}</span>
+        </div>
+        
+        <div class="amount-row">
+            <span class="amount-label">Valor del Aporte:</span>
+            <span class="amount-value">${{ valor_aporte|floatformat:2 }}</span>
+        </div>
+        
+        <div class="amount-row total-row">
+            <span class="amount-label">Saldo Actual:</span>
+            <span class="amount-value">${{ saldo_actual|floatformat:2 }}</span>
+        </div>
+    </div>
+    
+    <div class="note-section">
+        <p class="note-text">
+            <strong>Nota:</strong> Este recibo es un comprobante del aporte realizado a su cuenta de ahorros. 
+            Puede descargar una versión en PDF para sus registros.
+        </p>
+    </div>
+</div>

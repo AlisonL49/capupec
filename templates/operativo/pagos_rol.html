@@ -1,0 +1,92 @@
+{% extends 'navbar.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <!-- Encabezado -->
+    <div class="card border-secondary">
+        <div class="card-header text-dark d-flex " style="background-color: #f5ea41">
+            <h5 class="mb-0">Registro de Pagos</h5>
+        </div>
+
+        <div class="card-body">
+            <!-- Filtros de Fecha y Tipo de Pago -->
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="f_rep" class="form-label">F. Rep.</label>
+                    <input type="date" id="f_rep" class="form-control" value="2024-02-11">
+                </div>
+                <div class="col-md-4">
+                    <label for="fecha" class="form-label">Fecha</label>
+                    <input type="date" id="fecha" class="form-control" value="2024-02-11">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button class="btn btn-outline-secondary w-100">Procesar</button>
+                </div>
+            </div>
+
+            <!-- Opciones de Pago -->
+            <div class="mb-3">
+                <label class="form-label">Tipo de Pago:</label>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="tipoPago" id="ahorros" checked>
+                    <label class="form-check-label" for="ahorros">Ahorros</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="tipoPago" id="prestamos">
+                    <label class="form-check-label" for="prestamos">Préstamos</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="tipoPago" id="ah_futuro">
+                    <label class="form-check-label" for="ah_futuro">Ah. Futuro</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="tipoPago" id="multas">
+                    <label class="form-check-label" for="multas">Multas</label>
+                </div>
+            </div>
+
+            <!-- Tabla de Pagos -->
+            <div class="table-responsive mb-3">
+                <table class="table table-bordered text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>N. SOCIO</th>
+                            <th>NOMBRES</th>
+                            <th>ADH/PREST/FUTURO/MULTA</th>
+                            <th>AHO/CUOTA/VALOR</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>001</td>
+                            <td>Juan Pérez</td>
+                            <td>$200.00</td>
+                            <td>$50.00</td>
+                        </tr>
+                        <tr>
+                            <td>002</td>
+                            <td>María López</td>
+                            <td>$300.00</td>
+                            <td>$70.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Botones -->
+            <div class="d-flex justify-content-end gap-2">
+                <button class="btn btn-primary">Consultar</button>
+                <button class="btn btn-success">Guardar</button>
+                <button class="btn btn-warning">Imprimir</button>
+                <button class="btn btn-danger">Salir</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+{% endblock %}

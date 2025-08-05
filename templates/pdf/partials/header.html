@@ -1,0 +1,11 @@
+<!-- Encabezado reutilizable para reportes PDF -->
+<div class="header">
+    {% if logo_base64 %}
+    <img src="data:image/png;base64,{{ logo_base64 }}" alt="Logo CAPUPEC" class="logo">
+    {% endif %}
+    <div class="header-text">
+        <h1>CAJA DE AHORRO Y CRÉDITO CAPUPEC</h1>
+        <h2>{{ titulo_reporte|default:"REPORTE GENERAL" }}</h2>
+        <p>Fecha de generación: {{ fecha_generacion }}</p>
+    </div>
+</div>

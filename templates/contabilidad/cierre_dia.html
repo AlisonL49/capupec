@@ -1,0 +1,39 @@
+{% extends 'navbar.html' %}
+
+{% block content %}
+
+
+<div class="container mt-4">
+    <!-- Encabezado -->
+    <div class="card border-secondary">
+        <div class="card-header text-dark d-flex " style="background-color: #f5ea41">
+            <h5 class="mb-0">Cierre Día Contable</h5>
+        </div>
+
+        <div class="card-body">
+            <!-- Campos de Fecha -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="desde" class="form-label">Desde</label>
+                    <input type="date" id="desde" class="form-control" value="2024-01-01">
+                </div>
+                <div class="col-md-6">
+                    <label for="hasta" class="form-label">Hasta</label>
+                    <input type="date" id="hasta" class="form-control" value="2024-02-29">
+                </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="d-flex justify-content-end gap-2">
+                <button class="btn btn-primary">Cerrar</button>
+                <button class="btn btn-danger">Salir</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+{% endblock %}

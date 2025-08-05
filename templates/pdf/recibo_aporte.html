@@ -1,0 +1,16 @@
+{% extends 'pdf/base_recibo.html' %}
+
+{% block title %}Recibo de Aporte{% endblock %}
+
+{% block encabezado %}Recibo de Aporte{% endblock %}
+
+{% block contenido %}
+    <table>
+        <tr><th>N° Recibo</th><td>{{ numero_recibo }}</td>
+        <tr><th>Fecha</th><td>{{ fecha|date:"d/m/Y H:i" }}</td></tr></tr>
+        <tr><th>No Socio</th><td>{{ id }}</td></tr>
+        <tr><th>Nombres</th><td>{{ nombres }}</td></tr>
+        <tr><th>Valor del Aporte</th><td>${{ valor_aporte }}</td></tr>
+        <tr><th>Saldo Actual</th><td>${{ saldo }}</td></tr>
+    </table>
+{% endblock %}

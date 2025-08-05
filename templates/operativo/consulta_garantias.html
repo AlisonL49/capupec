@@ -1,0 +1,112 @@
+{% extends 'navbar.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <!-- Encabezado -->
+    <div class="card ">
+        <div class="card-custom-header  d-flex">
+            <h5 class="mb-0">Consulta de Garantías</h5>
+        </div>
+
+        <div class="card-body">
+            <!-- Mensajes de error -->
+            {% if messages %}
+            <div>
+                {% for message in messages %}
+                <div
+                    class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'warning' %}alert-warning{% else %}alert-success{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="pb-3">
+                <!-- formulario de búsqueda -->
+                <label for="garante" class="form-label">Apellidos Garante</label>
+                {% include 'partials/formulario_busqueda.html' %}
+            </div>
+
+        </div>
+
+        <h5 class="mb-3 px-3">Resultados</h5>
+
+        <div class="table-responsive px-3 pb-3">
+            <table class="table table-bordered table-hover rounded overflow-hidden text-center" id="tablaSocios">
+                <thead class="table-secondary">
+                    <tr>
+                        <th>NOMBRES</th>
+                        <th>IDENTIFICACIÓN</th>
+                        <th>NO SOCIO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if search_query %}
+                    {% for usuario in usuarios %}
+                    <tr class="fila-socio" data-usuario-id="{{ usuario.id }}" style="cursor: pointer;">
+                        <td>{{ usuario.last_name }} {{ usuario.first_name }}</td>
+                        <td>{{ usuario.cedula }}</td>
+                        <td>{{ usuario.id }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3">
+                            {% if search_query %}
+                            No se encontraron socios con "{{ search_query }}"
+                            {% else %}
+                            No hay socios registrados
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <h5 class="mb-0 px-3">Garantias </h5>
+        <div class="table-responsive px-3 pb-3">
+            <table class="table table-bordered table-hover rounded overflow-hidden text-center" id="tablaSocios">
+                <thead class="table-secondary">
+                    <tr>
+                        <th>No OP.</th>
+                        <th>NOMBRES</th>
+                        <th>MONTO</th>
+                        <th>SALDO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if search_query %}
+                    {% for usuario in usuarios %}
+                    <tr>
+                        
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">
+                           
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

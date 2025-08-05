@@ -1,0 +1,234 @@
+{% extends 'navbar.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container mt-4">
+    <!-- Encabezado -->
+    <div class="card">
+        <div class="card-custom-header  d-flex ">
+            <h5 class="mb-0">Tipos de Crédito</h5>
+        </div>
+
+        <div class="card-body">
+            <!-- Mensajes de error -->
+            {% if messages %}
+            <div>
+                {% for message in messages %}
+                <div
+                    class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'warning' %}alert-warning{% else %}alert-success{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+                <div class="border rounded p-3 mb-3">
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <div class="row mb-3">
+                                <!-- Formulario -->
+                                <div class="col-sm-12">
+                                    <div class="row mb-3">                                       
+                                        <div class="col-md-5">
+                                            <label for="tipo" class="form-label">Tipo Crédito</label>
+                                            <input type="text" id="tipo" name="tcredito_tipo" class="form-control" required>
+                                        </div> 
+                                        <div class="col-3 col-sm-3">
+                                            <label for="abreviatura" class="form-label">Abreviatura</label>
+                                            <input type="text" id="abreviatura" name="tcredito_abreviatura"
+                                                class="form-control" onkeyup="this.value=this.value.toUpperCase()"
+                                                required>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="monto_max" class="form-label">Monto Máximo</label>
+                                            <input type="text" id="monto_max" name="tcredito_monto_maximo"
+                                                class="form-control" required>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="num_cuotas" class="form-label">No. Cuotas</label>
+                                            <input type="text" id="num_cuotas" name="tcredito_num_cuotas"
+                                                class="form-control" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-2">
+                                            <label for="tasa_interes" class="form-label">Tasa Interés</label>
+                                            <input type="text" id="tasa_interes" name="tcredito_tasa_interes"
+                                                class="form-control" required>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="porcentaje_mora" class="form-label">Interes Mora</label>
+                                            <input type="text" id="porcentaje_mora" name="tcredito_porcentaje_mora"
+                                                class="form-control" required>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <label for="aportes_min" class="form-label">Aportes Mín.</label>
+                                            <input type="text" id="aportes_min" name="tcredito_aporte_minimo"
+                                                class="form-control" required>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="porcentaje_encaje" class="form-label">% Encaje</label>
+                                            <input type="text" id="porcentaje_encaje" name="tcredito_porcentaje_encaje"
+                                                class="form-control" required>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="gracia" class="form-label">Gracia</label>
+                                            <input type="text" id="gracia" name="tcredito_gracia" class="form-control"
+                                                required>
+                                        </div>
+                                        <div class="col-sm-2  align-self-end">
+                                            <div class="form-check">
+                                                <input class="form-check-input" name="tcredito_estado" type="checkbox"
+                                                    id="estado">
+                                                <label class="form-check-label" for="estado">Estado</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="d-flex justify-content-end gap-2">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <button type="reset" class="btn btn-secondary">Limpiar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tabla -->
+        <div class="table-responsive px-3 pb-3">
+            <table class="table table-bordered table-hover table-striped rounded overflow-hidden align-middle text-center table-scroll">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ABREVIATURA</th>
+                        <th>TIPO CRÉDITO</th>
+                        <th>MONTO MÁX.</th>
+                        <th>PLAZO</th>
+                        <th>T.INTERÉS</th>
+                        <th>APORTE MÍN.</th>
+                        <th>% ENCAJE</th>
+                        <th>GRACIA</th>
+                        <th>I.MORA</th>
+                        <th>ESTADO</th>
+                        <th>ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for credito in tipos_creditos %}
+                    <tr>
+                        <td>{{ credito.tcredito_abreviatura }}</td>
+                        <td>{{ credito.tcredito_tipo }}</td>
+                        <td>{{ credito.tcredito_monto_maximo }}</td>
+                        <td>{{ credito.tcredito_num_cuotas }}</td>
+                        <td>{{ credito.tcredito_tasa_interes }}</td>
+                        <td>{{ credito.tcredito_aporte_minimo }}</td>
+                        <td>{{ credito.tcredito_porcentaje_encaje }}</td>
+                        <td>{{ credito.tcredito_gracia }}</td>
+                        <td>{{ credito.tcredito_porcentaje_mora }}</td>
+                        <td>{{ credito.tcredito_estado|yesno:"Activo,Inactivo" }}</td>
+                        <td>
+        <button type="button" class="btn btn-sm btn-outline-primary me-1 btn-action-edit-tcredito"
+            title="Editar"
+            data-id="{{ credito.id }}"
+            data-abreviatura="{{ credito.tcredito_abreviatura }}"
+            data-tipo="{{ credito.tcredito_tipo }}"
+            data-monto_maximo="{{ credito.tcredito_monto_maximo }}"
+            data-num_cuotas="{{ credito.tcredito_num_cuotas }}"
+            data-tasa_interes="{{ credito.tcredito_tasa_interes }}"
+            data-aporte_minimo="{{ credito.tcredito_aporte_minimo }}"
+            data-porcentaje_encaje="{{ credito.tcredito_porcentaje_encaje }}"
+            data-gracia="{{ credito.tcredito_gracia }}"
+            data-porcentaje_mora="{{ credito.tcredito_porcentaje_mora }}"
+            data-estado="{{ credito.tcredito_estado }}">
+            <i class="fas fa-edit"></i>
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-danger btn-action-delete-tcredito"
+            title="Eliminar"
+            data-id="{{ credito.id }}">
+            <i class="fas fa-trash-alt"></i>
+        </button>
+    </td>
+</tr>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="11">No hay tipos de ahorros registrados.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Tipo de Crédito -->
+<div class="modal fade" id="modalEditarTipoCredito" tabindex="-1" aria-labelledby="modalEditarTipoCreditoLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="post" id="formEditarTipoCredito">
+      {% csrf_token %}
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalEditarTipoCreditoLabel">Editar Tipo de Crédito</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="id" id="edit_tcredito_id">
+          <div class="mb-3">
+            <label for="edit_tcredito_tipo" class="form-label">Tipo Crédito</label>
+            <input type="text" class="form-control" id="edit_tcredito_tipo" name="tcredito_tipo" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit_tcredito_abreviatura" class="form-label">Abreviatura</label>
+            <input type="text" class="form-control" id="edit_tcredito_abreviatura" name="tcredito_abreviatura" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit_tcredito_monto_maximo" class="form-label">Monto Máximo</label>
+            <input type="text" class="form-control" id="edit_tcredito_monto_maximo" name="tcredito_monto_maximo" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit_tcredito_num_cuotas" class="form-label">No. Cuotas</label>
+            <input type="text" class="form-control" id="edit_tcredito_num_cuotas" name="tcredito_num_cuotas" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit_tcredito_tasa_interes" class="form-label">Tasa Interés</label>
+            <input type="text" class="form-control" id="edit_tcredito_tasa_interes" name="tcredito_tasa_interes" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit_tcredito_aporte_minimo" class="form-label">Aporte Mínimo</label>
+            <input type="text" class="form-control" id="edit_tcredito_aporte_minimo" name="tcredito_aporte_minimo" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit_tcredito_porcentaje_encaje" class="form-label">% Encaje</label>
+            <input type="text" class="form-control" id="edit_tcredito_porcentaje_encaje" name="tcredito_porcentaje_encaje" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit_tcredito_gracia" class="form-label">Gracia</label>
+            <input type="text" class="form-control" id="edit_tcredito_gracia" name="tcredito_gracia" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit_tcredito_porcentaje_mora" class="form-label">Interés Mora</label>
+            <input type="text" class="form-control" id="edit_tcredito_porcentaje_mora" name="tcredito_porcentaje_mora" required>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="edit_tcredito_estado" name="tcredito_estado">
+            <label class="form-check-label" for="edit_tcredito_estado">Activo</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+{% endblock %}

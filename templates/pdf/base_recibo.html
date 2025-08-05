@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Recibo{% endblock %}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2rem;
+            font-size: 14px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            height: 60px;
+            margin-bottom: 10px;
+        }
+
+        h1.title {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .company-name {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        td, th {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        .signature-section {
+            margin-top: 3rem;
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+        }
+
+        .signature {
+            text-align: center;
+            width: 45%;
+        }
+
+        .signature-line {
+            border-top: 1px solid #000;
+            margin-top: 60px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Encabezado -->
+    <div class="header">
+        {% if logo_url %}
+            <img src="{{ logo_url }}" class="logo">
+        {% endif %}
+        <div class="company-name">{{ nombre_empresa }}</div>
+        <h1 class="title">{% block encabezado %}Recibo{% endblock %}</h1>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="content">
+        {% block contenido %}
+        <!-- contenido específico del recibo -->
+        {% endblock %}
+    </div>
+
+    <!-- Firmas -->
+    <div class="signature-section">
+        <div class="signature">
+            <div class="signature-line"></div>
+            <div>Firma del Administrador</div>
+        </div>
+        <div class="signature">
+            <div class="signature-line"></div>
+            <div>Firma del Socio</div>
+        </div>
+    </div>
+
+    <!-- Pie de página -->
+    <div class="footer">
+        Este documento ha sido generado automáticamente por el sistema CAPUPEC.
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Amortización</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th, td { border: 1px solid #333; padding: 6px; text-align: center; }
+        th { background-color: #eee; }
+    </style>
+</head>
+<body>
+    <h2 style="text-align: center;">Tabla de Amortización</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>N°</th>
+                <th>Fecha de Pago</th>
+                <th>Capital</th>
+                <th>Interés</th>
+                <th>Seguro</th>
+                <th>Cuota Total</th>
+                <th>Saldo Pendiente</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cuota in tabla_amortizacion %}
+            <tr>
+                <td>{{ cuota.numero }}</td>
+                <td>{{ cuota.fecha_pago }}</td>
+                <td>{{ cuota.capital }}</td>
+                <td>{{ cuota.interes }}</td>
+                <td>{{ cuota.seguro }}</td>
+                <td>{{ cuota.cuota_total }}</td>
+                <td>{{ cuota.saldo }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

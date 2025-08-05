@@ -1,0 +1,170 @@
+{% extends 'navbar.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block content %}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-custom-header  d-flex ">
+            <h4 class="mb-0">Registro de Plazo Fijo</h4>
+        </div>
+
+        <div class="card-body">
+            <!-- Mensajes -->
+            {% if messages %}
+            <div>
+                {% for message in messages %}
+                <div
+                    class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'warning' %}alert-warning{% else %}alert-success{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="POST" novalidate>
+                {% csrf_token %}
+                <div class="border rounded p-3 mb-3">
+                    <!-- Formulario -->
+                    <div class="row mb-3">
+                        <div class="col-4 col-sm-4">
+                            <label for="id_pf_descripcion">Descripción</label>
+                            {{ form.pf_descripcion|add_class:"form-control"}}
+
+                        </div>
+                        <div class="col-2 col-sm-2">
+                            <label for="id_pf_monto">Monto</label>
+                            {{ form.pf_monto|add_class:"form-control"}}
+                        </div>
+                        <div class="col-2 col-sm-2">
+                            <label for="id_pf_plazo">Plazo (meses)</label>
+                            {{ form.pf_plazo|add_class:"form-control" }}
+
+                        </div>
+                        <div class="col-3 col-sm-3">
+                            <label for="id_pf_fecha_vencimiento">Fecha de Vencimiento</label>
+                            {{ form.pf_fecha_vencimiento}}
+                        </div>
+                    </div>
+
+                    <div class="row mt-4 mb-3">
+                        
+                        <div class="col-2 col-sm-2">
+                            <label for="id_pf_tasa_interes">Tasa de Interés (%)</label>
+                            {{ form.pf_tasa_interes|add_class:"form-control"}}
+                        </div>
+                        <div class="col-3 col-sm-3 align-self-end">
+                            {{ form.pf_estado|add_class:"form-check-input" }}
+                            <label for="id_pf_estado">Estado</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-end mt-3">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <button type="reset" class="btn btn-secondary">Limpiar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tabla -->
+        <div class="table-responsive px-3 pb-3">
+            <table
+                class="table table-bordered table-hover table-striped rounded overflow-hidden align-middle text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Descripción</th>
+                        <th>Monto</th>
+                        <th>Plazo</th>
+                        <th>Interés</th>
+                        <th>Vencimiento</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for plazo in plazos %}
+                    <tr>
+                        <td>{{ plazo.pf_descripcion }}</td>
+                        <td>{{ plazo.pf_monto }}</td>
+                        <td>{{ plazo.pf_plazo }}</td>
+                        <td>{{ plazo.pf_tasa_interes }}</td>
+                        <td>{{ plazo.pf_fecha_vencimiento }}</td>
+                        <td>{{ plazo.pf_estado|yesno:"Activo,Inactivo" }}</td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-outline-primary me-1 btn-action-edit-plazofijo"
+                                title="Editar" data-id="{{ plazo.id }}"
+                                data-descripcion="{{ plazo.pf_descripcion }}"
+                                data-monto="{{ plazo.pf_monto }}"
+                                data-plazo="{{ plazo.pf_plazo }}" 
+                                data-tasa_interes="{{ plazo.pf_tasa_interes }}" 
+                                data-fecha_vencimiento="{{ plazo.pf_fecha_vencimiento }}" 
+                                data-estado="{{ plazo.pf_estado }}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger btn-action-delete-plazofijo"
+                                title="Eliminar" data-id="{{ plazo.id }}">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7">No hay datos disponibles.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar  -->
+<div class="modal fade" id="modalEditarPlazoFijo" tabindex="-1" aria-labelledby="modalEditarPlazoFijoLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="post" id="formEditarPlazoFijo">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEditarPlazoFijoLabel">Editar Plazo Fijo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="edit_pf_id">                    
+                    <div class="mb-3">
+                        <label for="edit_pf_descripcion" class="form-label">Descripción</label>
+                        <input type="text" class="form-control" id="edit_pf_descripcion" name="pf_descripcion" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_pf_monto" class="form-label">Monto</label>
+                        <input type="text" class="form-control" id="edit_pf_monto" name="pf_monto" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_pf_plazo" class="form-label">Plazo (meses)</label>
+                        <input type="text" class="form-control" id="edit_pf_plazo" name="pf_plazo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_pf_tasa_interes" class="form-label">Tasa de interes (%)</label>
+                        <input type="text" class="form-control" id="edit_pf_tasa_interes" name="pf_tasa_interes" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_pf_fecha_vencimiento" class="form-label">Fecha de vencimiento</label>
+                        <input type="date" class="form-control" id="edit_pf_fecha_vencimiento" name="pf_fecha_vencimiento" required>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="edit_pf_estado" name="pf_estado">
+                        <label class="form-check-label" for="edit_pf_estado">Activo</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends 'navbar.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <!-- Encabezado -->
+    <div class="card border-secondary">
+        <div class="card-header text-dark d-flex " style="background-color: #f5ea41">
+            <h5 class="mb-0">Balance de Comprobación</h5>
+        </div>
+
+        <div class="card-body">
+            <!-- Filtros -->
+            <div class="row mb-3 align-items-center">
+                <div class="col-md-3">
+                    <label for="fecha" class="form-label">Al</label>
+                    <input type="date" id="fecha" class="form-control" value="2024-01-01">
+                </div>
+                <div class="col-md-9 d-flex justify-content-end">
+                    <button class="btn btn-primary mx-1">Consultar</button>
+                    <button class="btn btn-success mx-1">Imprimir</button>
+                    <button class="btn btn-warning mx-1">Limpiar</button>
+                    <button class="btn btn-danger mx-1">Salir</button>
+                </div>
+            </div>
+
+            <!-- Tabla de Balance de Comprobación -->
+            <div class="table-responsive">
+                <table class="table table-bordered text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>CUENTA</th>
+                            <th>NOMBRE CUENTA</th>
+                            <th>DEBE</th>
+                            <th>HABER</th>
+                            <th>S. DEUDOR</th>
+                            <th>S. ACREEDOR</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Filas de ejemplo -->
+                        <tr>
+                            <td>101</td>
+                            <td>Banco</td>
+                            <td>$5,000</td>
+                            <td>$0</td>
+                            <td>$5,000</td>
+                            <td>$0</td>
+                        </tr>
+                        <tr>
+                            <td>202</td>
+                            <td>Proveedores</td>
+                            <td>$0</td>
+                            <td>$3,000</td>
+                            <td>$0</td>
+                            <td>$3,000</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+{% endblock %}

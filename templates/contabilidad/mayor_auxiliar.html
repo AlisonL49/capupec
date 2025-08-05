@@ -1,0 +1,102 @@
+{% extends 'navbar.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <!-- Encabezado -->
+    <div class="card border-secondary">
+        <div class="card-header text-dark d-flex " style="background-color: #f5ea41">
+            <h5 class="mb-0">Mayor Auxiliar</h5>
+        </div>
+
+        <div class="card-body">
+            <!-- Código Cuenta y Nombre Cuenta -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="codigoCuenta" class="form-label">Código Cuenta</label>
+                    <input type="text" id="codigoCuenta" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label for="nombreCuenta" class="form-label">Nombre Cuenta</label>
+                    <input type="text" id="nombreCuenta" class="form-control">
+                </div>
+            </div>
+
+            <!-- Fechas -->
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="desde" class="form-label">Desde</label>
+                    <input type="text" id="desde" class="form-control" value="01/01/2024">
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="hastaCheckbox">
+                        <label class="form-check-label" for="hastaCheckbox">Hasta</label>
+                    </div>
+                    <input type="text" id="hasta" class="form-control" value="01/01/2024">
+                </div>
+            </div>
+
+            <!-- Saldo Inicial (Label) -->
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label class="form-label">Saldo Inicial</label>
+                </div>
+            </div>
+
+            <!-- Tabla única para Saldo Inicial y Saldo Final -->
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-center">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>N COMPROBANTE</th>
+                                    <th>CONCEPTO</th>
+                                    <th>DÉBITO</th>
+                                    <th>CRÉDITO</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Filas de ejemplo -->
+                                <tr>
+                                    <td>001</td>
+                                    <td>Pago de nómina</td>
+                                    <td>$5,000</td>
+                                    <td>$0</td>
+                                </tr>
+                                <tr>
+                                    <td>002</td>
+                                    <td>Compra de materiales</td>
+                                    <td>$0</td>
+                                    <td>$3,000</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Saldo Final (Label) -->
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label class="form-label">Saldo Final</label>
+                </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="row mb-3">
+                <div class="col-md-12 d-flex justify-content-end">
+                    <button class="btn btn-primary mx-1">Consultar</button>
+                    <button class="btn btn-success mx-1">Imprimir</button>
+                    <button class="btn btn-warning mx-1">Limpiar</button>
+                    <button class="btn btn-danger mx-1">Salir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+{% endblock %}

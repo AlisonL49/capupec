@@ -1,0 +1,16 @@
+{% extends 'navbar.html' %}
+
+{% block content %}
+<h1>Registrar usuario </h1>
+
+{{error}}
+<form method="POST">
+    {% csrf_token %}
+    {{form.as_p}}
+    <button>
+        Registrar
+    </button>    
+</form>
+
+
+{% endblock %}

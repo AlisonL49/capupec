@@ -1,0 +1,23 @@
+<!-- Sección de firmas reutilizable para reportes PDF -->
+{% if representantes %}
+<div class="representantes">
+    <div class="representante">
+        <div class="firma-linea">
+            {{ representantes.presidente }}<br>
+            PRESIDENTE
+        </div>
+    </div>
+    <div class="representante">
+        <div class="firma-linea">
+            {{ representantes.administrador }}<br>
+            ADMINISTRADOR
+        </div>
+    </div>
+    <div class="representante">
+        <div class="firma-linea">
+            {{ representantes.secretario }}<br>
+            SECRETARIO
+        </div>
+    </div>
+</div>
+{% endif %}

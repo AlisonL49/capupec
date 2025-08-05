@@ -1,0 +1,80 @@
+{% extends 'navbar.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <!-- Encabezado -->
+    <div class="card border-secondary">
+        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Libro Diario</h5>
+            <button type="button" class="btn-close"></button>
+        </div>
+
+        <div class="card-body">
+            <!-- Filtros -->
+            <div class="row mb-3 align-items-center">
+                <div class="col-md-3">
+                    <label for="fechaInicial" class="form-label">Fecha Inicial</label>
+                    <input type="text" id="fechaInicial" class="form-control" value="01/2024">
+                </div>
+                <div class="col-md-3">
+                    <label for="fechaFinal" class="form-label">Fecha Final</label>
+                    <input type="text" id="fechaFinal" class="form-control" value="01/01/2024">
+                </div>
+                <div class="col-md-6 d-flex justify-content-end">
+                    <button class="btn btn-primary mx-1">Mayoriza</button>
+                    <button class="btn btn-success mx-1">Consultar</button>
+                    <button class="btn btn-warning mx-1">Imprimir</button>
+                    <button class="btn btn-danger mx-1">Limpiar</button>
+                    <button class="btn btn-secondary mx-1">Salir</button>
+                </div>
+            </div>
+
+            <!-- Tabla de Libro Diario -->
+            <div class="table-responsive">
+                <table class="table table-bordered text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>NCOMP.</th>
+                            <th>CONCEPTO</th>
+                            <th>FECHA</th>
+                            <th>CUENTA</th>
+                            <th>NOMBRE CUENTA</th>
+                            <th>DÉBITO</th>
+                            <th>CRÉDITO</th>
+                            <th>MAY.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Filas de ejemplo -->
+                        <tr>
+                            <td>001</td>
+                            <td>Pago de nómina</td>
+                            <td>01/01/2024</td>
+                            <td>101</td>
+                            <td>Banco</td>
+                            <td>$5,000</td>
+                            <td>$0</td>
+                            <td>X</td>
+                        </tr>
+                        <tr>
+                            <td>002</td>
+                            <td>Compra de materiales</td>
+                            <td>01/01/2024</td>
+                            <td>202</td>
+                            <td>Proveedores</td>
+                            <td>$0</td>
+                            <td>$3,000</td>
+                            <td>X</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'navbar.html' %}
+{% load static %}
+{% block content %}
+
+
+<div class="container mt-4">
+    <div class="card ">
+        <div class="card-custom-header d-flex">
+            <h4 class="mb-0">Datos Representantes</h4>
+        </div>
+
+        <div class="card-body">
+            <!-- Mensajes de error -->
+            {% if messages %}
+            <div>
+                {% for message in messages %}
+                <div
+                    class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'warning' %}alert-warning{% else %}alert-success{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+                <div class="border rounded p-3 mb-3">
+                    <div class="form-group mb-3">
+                        <label for="presidente" class="form-label">Presidente</label>
+                        <input type="text" id="presidente" name="presidente" class="form-control autocomplete-usuario"
+                            value="{{representante.presidente}}">
+                        
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="administrador" class="form-label">Administrador</label>
+                        <input type="text" id="administrador" name="administrador" class="form-control"
+                            value="{{representante.administrador}}">
+                        <datalist id="lista-usuarios-admin"></datalist>
+
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="secretario" class="form-label">Secretario</label>
+                        <input type="text" id="secretario" name="secretario" class="form-control"
+                            value="{{representante.secretario}}">
+                        <datalist id="lista-usuarios-secretario"></datalist>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="tesorero" class="form-label">Tesorero</label>
+                        <input type="text" id="tesorero" name="tesorero" class="form-control"
+                            value="{{representante.tesorero}}">
+                        <datalist id="lista-usuarios-tesorero"></datalist>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="tesorero_aso" class="form-label">Tesorero Asociación</label>
+                        <input type="text" id="tesorero_aso" name="tesorero_aso" class="form-control"
+                            value="{{representante.tesorero_aso}}">
+                            <datalist id="lista-usuarios-tesorero_aso"></datalist>
+                    </div>
+                    
+                </div>
+
+                <div class="text-end mt-3">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <button type="reset" class="btn btn-secondary">Limpiar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script src="{% static 'js/autocomplete.js' %}"></script> 
+ <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        inicializarAutocomplete("#presidente", "{% url 'buscar_usuarios' %}");
+        inicializarAutocomplete("#administrador", "{% url 'buscar_usuarios' %}");
+        inicializarAutocomplete("#secretario", "{% url 'buscar_usuarios' %}");
+        inicializarAutocomplete("#tesorero", "{% url 'buscar_usuarios' %}");
+        inicializarAutocomplete("#tesorero_aso", "{% url 'buscar_usuarios' %}");
+    });
+</script>
+
+
+{% endblock %}

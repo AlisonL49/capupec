@@ -1,0 +1,179 @@
+{% extends 'navbar.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container mt-4">
+    <!-- Encabezado -->
+    <div class="card">
+        <div class="card-custom-header  d-flex ">
+            <h4 class="mb-0">Tipo Ahorro Futuro</h4>
+        </div>
+
+        <div class="card-body">
+            <!-- Mensajes de error -->
+            {% if messages %}
+            <div>
+                {% for message in messages %}
+                <div
+                    class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'warning' %}alert-warning{% else %}alert-success{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+                <div class="border rounded p-3 mb-3">
+                    <!-- Formulario -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="tafuturo_tipo" class="form-label">Tipo de Ahorro Futuro</label>
+                            <input type="text" id="tafuturo_tipo" name="tafuturo_tipo" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="tafuturo_abreviatura" class="form-label">Abreviatura</label>
+                            <input type="text" id="tafuturo_abreviatura" name="tafuturo_abreviatura" class="form-control"  onkeyup="this.value=this.value.toUpperCase()" required>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="tafuturo_plazo" class="form-label">Plazo</label>
+                            <input type="text" id="tafuturo_plazo" name="tafuturo_plazo" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-2">
+                            <label for="tafuturo_v_inicial" class="form-label">Valor Inicial</label>
+                            <input type="text" id="tafuturo_v_inicial" name="tafuturo_v_inicial" class="form-control" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="tafuturo_v_periodico" class="form-label">Valor Periódico</label>
+                            <input type="text" id="tafuturo_v_periodico" name="tafuturo_v_periodico" class="form-control" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="penalizacion" class="form-label">% Penalización</label>
+                            <input type="text" id="penalizacion" name="tafuturo_penalizacion" class="form-control"required>
+                        </div>
+                        <div class="col-sm-3  align-self-end">
+                            <div class="form-check">
+                                <input class="form-check-input" name="tafuturo_estado" type="checkbox" id="estado">
+                                <label class="form-check-label" for="estado">Estado</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Botones -->
+                <div class="d-flex justify-content-end gap-2">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <button type="reset" class="btn btn-secondary">Limpiar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tabla -->
+        <div class="table-responsive px-3 pb-3">
+            <table class="table table-bordered table-hover table-striped rounded overflow-hidden align-middle text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ABREVIATURA</th>
+                        <th>TIPO</th>
+                        <th>V. INICIAL</th>
+                        <th>V. PERIÓDICO</th>
+                        <th>PLAZO</th>
+                        <th>% PENALIZACIÓN</th>
+                        <th>ESTADO</th>
+                        <th>ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for afuturo in tipos_afuturos %}
+                    <tr>
+                        <td>{{ afuturo.tafuturo_abreviatura }}</td>
+                        <td>{{ afuturo.tafuturo_tipo }}</td>
+                        <td>{{ afuturo.tafuturo_v_inicial }}</td>
+                        <td>{{ afuturo.tafuturo_v_periodico }}</td>
+                        <td>{{ afuturo.tafuturo_plazo }}</td>
+                        <td>{{ afuturo.tafuturo_penalizacion }}</td>
+                        <td>{{ afuturo.tafuturo_estado|yesno:"Activo,Inactivo" }}</td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-outline-primary me-1 btn-action-edit-tafuturo"
+                                title="Editar" data-id="{{ afuturo.id }}" 
+                                data-abreviatura="{{ afuturo.tafuturo_abreviatura }}"
+                                data-tipo="{{ afuturo.tafuturo_tipo }}"
+                                data-v_inicial="{{ afuturo.tafuturo_v_inicial}}" 
+                                data-v_periodico="{{ afuturo.tafuturo_v_periodico}}" 
+                                data-plazo="{{ afuturo.tafuturo_plazo}}" 
+                                data-penalizacion="{{ afuturo.tafuturo_penalizacion }}" 
+                                data-estado="{{ afuturo.tafuturo_estado }}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger btn-action-delete-tafuturo"
+                                title="Eliminar" data-id="{{ afuturo.id }}">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8">No hay tipos de ahorros futuro registrados.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar -->
+<div class="modal fade" id="modalEditarTiposAFuturo" tabindex="-1" aria-labelledby="modalEditarTiposAFuturoLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="post" id="formEditarTiposAFuturo">
+      {% csrf_token %}
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalEditarTiposAFuturoLabel">Editar Tipo de Ahorro Futuro</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="id" id="edit_tafuturo_id">
+          <div class="mb-3">
+            <label for="edit_tafuturo_abreviatura" class="form-label">Abreviatura</label>
+            <input type="text" class="form-control" id="edit_tafuturo_abreviatura" name="tafuturo_abreviatura" required  onkeyup="this.value=this.value.toUpperCase()">
+          </div>
+          <div class="mb-3">
+            <label for="edit_tafuturo_tipo" class="form-label">Tipo Ahorro Futuro</label>
+            <input type="text" class="form-control" id="edit_tafuturo_tipo" name="tafuturo_tipo" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit_tafuturo_v_inicial" class="form-label">Valor Inicial</label>
+            <input type="text" class="form-control" id="edit_tafuturo_v_inicial" name="tafuturo_v_inicial" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit_tafuturo_v_periodico" class="form-label">Valor Periódico</label>
+            <input type="text" class="form-control" id="edit_tafuturo_v_periodico" name="tafuturo_v_periodico" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit_tafuturo_plazo" class="form-label">Plazo</label>
+            <input type="text" class="form-control" id="edit_tafuturo_plazo" name="tafuturo_plazo" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit_tafuturo_penalizacion" class="form-label">% Penalización</label>
+            <input type="text" class="form-control" id="edit_tafuturo_penalizacion" name="tafuturo_penalizacion" required>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="edit_tafuturo_estado" name="tafuturo_estado">
+            <label class="form-check-label" for="edit_tafuturo_estado">Activo</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+{% endblock %}

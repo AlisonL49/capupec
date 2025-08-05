@@ -1,0 +1,75 @@
+{% extends 'pdf/base_reporte.html' %}
+
+{% block contenido_reporte %}
+    <!-- Sección de estadísticas -->
+    <div class="info-section">
+        <div class="info-item">
+            <strong>Total de Socios</strong>
+            <span class="total">{{ total_socios }}</span>
+        </div>
+        <div class="info-item">
+            <strong>Socios Activos</strong>
+            <span class="activos">{{ socios_activos }}</span>
+        </div>
+        <div class="info-item">
+            <strong>Socios Inactivos</strong>
+            <span class="inactivos">{{ socios_inactivos }}</span>
+        </div>
+    </div>
+    
+    <!-- Contenido de la tabla -->
+    <div class="table-container">
+        <div class="table-title">LISTADO DE SOCIOS </div>
+        
+        {% if socios %}
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 5%;">N°</th>
+                    <th style="width: 15%;">APELLIDOS</th>
+                    <th style="width: 15%;">NOMBRES</th>
+                    <th style="width: 10%;">CÉDULA</th>
+                    <th style="width: 6%;">GÉNERO</th>
+                    <th style="width: 10%;">TELÉFONO</th>
+                    <th style="width: 12%;">NOMBRAMIENTO</th>
+                    <th style="width: 17%;">LUGAR DE TRABAJO</th>
+                    <th style="width: 6%;">ESTADO</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for socio in socios %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td >{{ socio.user.last_name }}</td>
+                    <td >{{ socio.user.first_name }}</td>
+                    <td>{{ socio.cedula }}</td>
+                    <td>
+                        {% if socio.genero == 'M' %}
+                            Masculino
+                        {% elif socio.genero == 'F' %}
+                            Femenino
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>{{ socio.telefono }}</td>
+                    <td>{{ socio.nombramiento }}</td>
+                    <td >{{ socio.lugar_trabajo|truncatechars:25 }}</td>
+                    <td>
+                        {% if socio.estado %}
+                            <span class="estado-activo">ACTIVO</span>
+                        {% else %}
+                            <span class="estado-inactivo">INACTIVO</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="no-data">
+            <strong>No hay socios registrados en el sistema</strong>
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}

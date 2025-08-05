@@ -1,0 +1,80 @@
+<div class="container-fluid">
+    <div class="row">
+        <!-- Barra lateral (oculta en Home) -->
+        {% if user.is_authenticated  %}
+        <nav class="col-md-3 col-lg-2 d-md-block sidebar shadow d-none">
+            <ul class="nav flex-column">
+
+                <!-- Administración -->
+                {% if categoria_actual == 'administracion' %}
+                <li class="nav-item"><a href="{% url 'usuarios' %}"
+                        class="nav-link {% if request.path == '/administracion/usuarios/' %}active{% endif %}">Usuarios</a></li>
+                <li class="nav-item"><a href="{% url 'representantes' %}"
+                        class="nav-link {% if request.path == '/administracion/representantes/' %}active{% endif %}">Representantes</a>
+                </li>
+
+                <!-- Submenú Definición de Tipos -->
+                <li class="nav-item">
+                    <a href="#" class="nav-link dropdown-toggle" data-toggle="collapse"
+                        data-target="#submenuDefinicion">Definición de Tipos</a>
+                    <div id="submenuDefinicion" class="collapse">
+                        <a href="#" class="nav-link">Ahorros</a>
+                        <a href="#" class="nav-link">Crédito</a>
+                        <a href="#" class="nav-link">Ahorro Futuro</a>
+                    </div>
+                </li>
+
+                <!-- Submenú Tasas de Interés -->
+                <li class="nav-item">
+                    <a href="#" class="nav-link dropdown-toggle" data-toggle="collapse"
+                        data-target="#submenuTasas">Tasas de Interés</a>
+                    <div id="submenuTasas" class="collapse">
+                        <a href="#" class="nav-link">Ahorros</a>
+                        <a href="#" class="nav-link">Ahorro Futuro</a>
+                    </div>
+                </li>
+                {% endif %}
+
+                <!-- Operativo -->
+                {% if categoria_actual == 'operativo' %}
+                <li class="nav-item"><a href="{% url 'socios' %}"
+                        class="nav-link {% if request.path == '/socios/' %}active{% endif %}">Socios</a></li>
+
+                <!-- Submenú Créditos -->
+                <li class="nav-item">
+                    <a href="#" class="nav-link dropdown-toggle" data-toggle="collapse"
+                        data-target="#submenuCreditos">Créditos</a>
+                    <div id="submenuCreditos" class="collapse">
+                        <a href="{% url 'consulta_garantias' %}" class="nav-link">Consulta Garantías</a>
+                        <a href="{% url 'solicitud_credito' %}" class="nav-link">Solicitud</a>
+                        <a href="{% url 'consulta_aprobacion' %}" class="nav-link">Consulta/Aprobación</a>
+                    </div>
+                </li>
+                {% endif %}
+
+                <!-- Contabilidad -->
+                {% if categoria_actual == 'contabilidad' %}
+                <li class="nav-item"><a href="{% url 'plan_cuentas' %}"
+                        class="nav-link {% if request.path == '/plan_cuentas/' %}active{% endif %}">Plan de
+                        Cuentas</a></li>
+
+                <!-- Submenú Periodos Contables -->
+                <li class="nav-item">
+                    <a href="#" class="nav-link dropdown-toggle" data-toggle="collapse"
+                        data-target="#submenuPeriodos">Periodos Contables</a>
+                    <div id="submenuPeriodos" class="collapse">
+                        <a href="{% url 'periodos_contables' %}" class="nav-link">Gestión Periodos</a>
+                    </div>
+                </li>
+                {% endif %}
+
+            </ul>
+        </nav>
+        {% endif %}
+
+        <!-- Contenido dinámico -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</div>

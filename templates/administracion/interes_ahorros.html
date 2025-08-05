@@ -1,0 +1,167 @@
+{% extends 'navbar.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block content %}
+
+<div class="container mt-4">
+    <!-- Encabezado -->
+    <div class="card">
+        <div  class="card-custom-header  d-flex ">
+            <h4 class="mb-0">Registro Interés en Ahorro</h4>
+        </div>
+
+        <div class="card-body">
+            <!-- Mensajes de error -->
+            {% if messages %}
+            <div>
+                {% for message in messages %}
+                <div class="alert 
+                    {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'warning' %}alert-warning{% else %}alert-success{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+                <div class="border rounded p-3 mb-3">
+                    <!-- Formulario -->
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="tipoAhorro" class="form-label">Tipo de Ahorro</label>
+                            <select id="tipoAhorro" name="iahorro_tipo" class="form-select" required>
+                                <option value="" disabled selected>Seleccione un tipo de ahorro</option>
+                                {% for ahorro in tipos_ahorros %}
+                                <option value="{{ ahorro.id }}">{{ ahorro.tahorro_tipo }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="iahorro_v_minimo" class="form-label">Valor Mínimo</label>
+                            {{ form.iahorro_v_minimo|add_class:"form-control"}}
+                        </div>
+                        <div class="col-md-2">
+                            <label for="iahorro_v_maximo" class="form-label">Valor Máximo</label>
+                            {{ form.iahorro_v_maximo|add_class:"form-control"}}
+                        </div>
+                        <div class="col-md-2">
+                            <label for="iahorro_rendimiento" class="form-label">Rendimiento (%)</label>
+                            {{ form.iahorro_rendimiento|add_class:"form-control"}}
+                        </div> 
+                        
+                        <div class="col-2 col-sm-2 align-self-end">
+                            {{ form.iahorro_estado|add_class:"form-check-input" }}
+                            <label for="iahorro_estado">Estado</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="d-flex justify-content-end gap-2">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <button type="reset" class="btn btn-secondary">Limpiar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tabla -->
+        <div class="table-responsive px-3 pb-3">
+            <table class="table table-bordered table-striped text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>TIPO AHORRO</th>
+                        <th>VAL MÍNIMO</th>
+                        <th>VAL MÁXIMO</th>
+                        <th>RENDIMIENTO</th>
+                        <th>ESTADO</th>
+                        <th>ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for iahorro in interes_ahorros %}
+                    <tr>
+                        <td>{{ iahorro.iahorro_tipo.tahorro_tipo }}</td> 
+                        <td>{{ iahorro.iahorro_v_minimo }}</td>
+                        <td>{{ iahorro.iahorro_v_maximo }}</td>
+                        <td>{{ iahorro.iahorro_rendimiento }}</td>
+                        <td>{{ iahorro.iahorro_estado|yesno:"Activo,Inactivo" }}</td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-outline-primary me-1 btn-action-edit-iahorro"
+                                title="Editar"
+                                data-id="{{ iahorro.id }}"
+                                data-tipo="{{ iahorro.iahorro_tipo.id }}"
+                                data-v_minimo="{{ iahorro.iahorro_v_minimo }}"
+                                data-v_maximo="{{ iahorro.iahorro_v_maximo }}"
+                                data-rendimiento="{{ iahorro.iahorro_rendimiento  }}"
+                                data-estado="{{ iahorro.iahorro_estado }}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger btn-action-delete-iahorro"
+                                title="Eliminar"
+                                data-id="{{ iahorro.id }}">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6">No hay intereses de ahorros registrados.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Interes en Ahorros -->
+<div class="modal fade" id="modalEditarInteresAhorro" tabindex="-1" aria-labelledby="modalEditarInteresAhorroLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="post" id="formEditarInteresAhorro">
+      {% csrf_token %}
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalEditarInteresAhorroLabel">Editar Interés en Ahorros</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="id" id="edit_iahorro_id">
+          <div class="mb-3">
+            <label for="edit_iahorro_tipo" class="form-label">Tipo</label>
+            <select id="edit_iahorro_tipo" name="iahorro_tipo" class="form-select" required>
+                <option value="" disabled selected>Seleccione un tipo de ahorro</option>
+                    {% for ahorro in tipos_ahorros %}
+                <option value="{{ ahorro.id }}">{{ ahorro.tahorro_tipo }}</option>
+                    {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="edit_iahorro_v_minimo" class="form-label">Valor Mínimo</label>
+            <input type="text" class="form-control" id="edit_iahorro_v_minimo" name="iahorro_v_minimo" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit_iahorro_v_maximo" class="form-label">Valor Máximo</label>
+            <input type="text" class="form-control" id="edit_iahorro_v_maximo" name="iahorro_v_maximo" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit_iahorro_rendimiento" class="form-label">Rendimiento</label>
+            <input type="text" class="form-control" id="edit_iahorro_rendimiento" name="iahorro_rendimiento" required>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="edit_iahorro_estado" name="iahorro_estado">
+            <label class="form-check-label" for="edit_iahorro_estado">Activo</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+
+{% endblock %}

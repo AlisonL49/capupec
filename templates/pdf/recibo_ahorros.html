@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recibo de Aporte en Ahorros</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.4;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 15px;
+        }
+        
+        .logo {
+            max-width: 80px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+        
+        .company-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin: 5px 0;
+        }
+        
+        .document-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2c5aa0;
+            margin: 10px 0;
+        }
+        
+        .recibo-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .recibo-numero {
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .fecha-hora {
+            text-align: right;
+        }
+        
+        .socio-info {
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        
+        .info-row {
+            display: flex;
+            margin-bottom: 8px;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            width: 150px;
+            color: #333;
+        }
+        
+        .info-value {
+            flex: 1;
+        }
+        
+        .aporte-details {
+            margin: 20px 0;
+            border: 2px solid #2c5aa0;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+        
+        .aporte-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2c5aa0;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .aporte-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .aporte-row:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 14px;
+            background-color: #e9ecef;
+            padding: 12px;
+            margin: 10px -20px -20px -20px;
+            border-radius: 0 0 6px 6px;
+        }
+        
+        .amount {
+            font-weight: bold;
+            color: #28a745;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
+        
+        .signatures {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-around;
+        }
+        
+        .signature-box {
+            text-align: center;
+            width: 200px;
+        }
+        
+        .signature-line {
+            border-top: 1px solid #333;
+            margin-top: 50px;
+            padding-top: 5px;
+            font-size: 11px;
+        }
+        
+        .watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 60px;
+            color: rgba(44, 90, 160, 0.1);
+            z-index: -1;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="watermark">CAPUPEC</div>
+    
+    <div class="header">
+        {% if logo_base64 %}
+        <img src="data:image/png;base64,{{ logo_base64 }}" alt="Logo CAPUPEC" class="logo">
+        {% endif %}
+        <div class="company-name">COOPERATIVA DE AHORRO Y CRÉDITO CAPUPEC</div>
+        <div class="document-title">RECIBO DE APORTE EN AHORROS</div>
+    </div>
+    
+    <div class="recibo-info">
+        <div class="recibo-numero">
+            Recibo No: AH-{{ socio.cedula }}-{{ fecha_aporte|date:"Ymd" }}
+        </div>
+        <div class="fecha-hora">
+            <div><strong>Fecha:</strong> {{ fecha_aporte }}</div>
+            <div><strong>Hora:</strong> {{ hora_aporte }}</div>
+        </div>
+    </div>
+    
+    <div class="socio-info">
+        <h3 style="margin-top: 0; color: #2c5aa0;">INFORMACIÓN DEL SOCIO</h3>
+        <div class="info-row">
+            <span class="info-label">No. Socio:</span>
+            <span class="info-value">{{ socio.id }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Cédula:</span>
+            <span class="info-value">{{ socio.cedula }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Nombres:</span>
+            <span class="info-value">{{ socio.user.first_name }} {{ socio.user.last_name }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Nombramiento:</span>
+            <span class="info-value">{{ socio.nombramiento }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Lugar de Trabajo:</span>
+            <span class="info-value">{{ socio.trabajo }}</span>
+        </div>
+    </div>
+    
+    <div class="aporte-details">
+        <div class="aporte-title">DETALLE DEL APORTE</div>
+        <div class="aporte-row">
+            <span>Valor del Aporte:</span>
+            <span class="amount">${{ valor_aporte }}</span>
+        </div>
+        <div class="aporte-row">
+            <span>Saldo Anterior:</span>
+            <span class="amount">${{ saldo_anterior|floatformat:2 }}</span>
+        </div>
+        <div class="aporte-row">
+            <span>NUEVO SALDO TOTAL:</span>
+            <span class="amount">${{ saldo_actual }}</span>
+        </div>
+    </div>
+    
+    <div class="signatures">
+        <div class="signature-box">
+            <div class="signature-line">
+                CAJERO(A)
+            </div>
+        </div>
+        <div class="signature-box">
+            <div class="signature-line">
+                SOCIO
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        {% if representantes %}
+        <p><strong>Representantes Legales:</strong></p>
+        <p>Presidente: {{ representantes.presidente }} | Administrador: {{ representantes.administrador }}</p>
+        <p>Secretario: {{ representantes.secretario }} | Tesorero: {{ representantes.tesorero }}</p>
+        {% endif %}
+        <p>Este documento es un comprobante oficial de su aporte en ahorros.</p>
+        <p>Conserve este recibo para sus registros personales.</p>
+        <p>Generado el {{ fecha_aporte }} a las {{ hora_aporte }}</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,199 @@
+{% extends 'navbar.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card ">
+        <div class="card-custom-header  d-flex ">
+            <h4 class="mb-0">Tipos de Ahorro</h4>
+        </div>
+
+        <div class="card-body">
+            <!-- Mensajes de error -->
+            {% if messages %}
+            <div>
+                {% for message in messages %}
+                <div
+                    class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'warning' %}alert-warning{% else %}alert-success{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+                <div class="border rounded p-3 mb-3">
+                    <div class="row mb-3">
+                        <div class="col-sm-12">
+                            <div class="row mb-3">
+                                <!-- Formulario -->
+                                <div class="col-md-12">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="tahorro_tipo" class="form-label">Tipo de Ahorro</label>
+                                            <input type="text" name="tahorro_tipo" id="tahorro_tipo"
+                                                class="form-control" required>
+                                        </div>
+                                        <div class="col-3 col-md-3 col-sm-3">
+                                            <label for="tahorro_abreviatura" class="form-label">Abreviatura</label>
+                                            <input type="text" name="tahorro_abreviatura" id="tahorro_abreviatura"
+                                                class="form-control" required  onkeyup="this.value=this.value.toUpperCase()">
+                                        </div>
+                                        <div class="col-md-3 ">
+                                            <label for="tahorro_capitalizacion" class="form-label">Capitalización </label>
+                                            <select
+                                                class="form-select {% if form.capitalizacion.errors %}is-invalid{% endif %}"
+                                                id="id_capitalizacion" name="tahorro_capitalizacion" required>
+                                                <option value="" disabled selected>Seleccione</option>
+                                                {% for capitalizacion in capitalizaciones %}
+                                                <option value="{{ capitalizacion.id }}">{{ capitalizacion.cap_nombre }}
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="tahorro_dia_aporte" class="form-label">Día Aporte</label>
+                                            <input type="text" name="tahorro_dia_aporte" id="tahorro_dia_aporte"
+                                                class="form-control" required>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="tahorro_meses_minimo" class="form-label">Meses de aporte</label>
+                                            <input type="text" name="tahorro_meses_minimo" id="tahorro_meses_minimo"
+                                                class="form-control" required>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="tahorro_porcent_aporte" class="form-label">Aporte mínimo</label>
+                                            <input type="text" name="tahorro_porcent_aporte" id="tahorro_porcent_aporte"
+                                                class="form-control" required>
+                                        </div>
+                                        <div class="col-md-3  align-self-end">
+                                            <input class="form-check-input" type="checkbox" id="tahorro_estado"
+                                                name="tahorro_estado">
+                                            <label class="form-check-label" for="tahorro_estado">Estado</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end gap-2">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <button type="reset" class="btn btn-secondary">Limpiar</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-responsive p-3">
+            <table class="table table-bordered table-hover table-striped rounded overflow-hidden align-middle text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ABREVIATURA</th>
+                        <th>TIPO AHORRO</th>
+                        <th>DIA APORTE</th>
+                        <th>MESES DE APORTE</th>
+                        <th>APORTE MINIMO</th>
+                        <th>CAPITALIZACION
+                        <th>ESTADO</th>
+                        <th>ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tahorro in tipos_ahorros %}
+                    <tr>
+                        <td>{{ tahorro.tahorro_abreviatura }}</td>
+                        <td>{{ tahorro.tahorro_tipo }}</td>
+                        <td>{{ tahorro.tahorro_dia_aporte }}</td>
+                        <td>{{ tahorro.tahorro_meses_minimo }}</td>
+                        <td>{{ tahorro.tahorro_porcent_aporte }}</td>
+                        <td>{{ tahorro.tahorro_capitalizacion }}</td>
+                        <td>{{ tahorro.tahorro_estado|yesno:"Activo,Inactivo" }}</td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-outline-primary me-1 btn-action-edit-tahorro"
+                                title="Editar"
+                                data-id="{{ tahorro.id }}"
+                                data-abreviatura="{{ tahorro.tahorro_abreviatura }}"
+                                data-tipo="{{ tahorro.tahorro_tipo }}"
+                                data-dia_aporte="{{ tahorro.tahorro_dia_aporte }}"
+                                data-meses_minimo="{{ tahorro.tahorro_meses_minimo }}"
+                                data-porcent_aporte="{{ tahorro.tahorro_porcent_aporte }}"
+                                data-capitalizacion="{{ tahorro.tahorro_capitalizacion_id }}"
+                                data-estado="{{ tahorro.tahorro_estado }}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger btn-action-delete-tahorro"
+                                title="Eliminar"
+                                data-id="{{ tahorro.id }}">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8">No hay tipos de ahorro registrados.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Tipo de Ahorro -->
+<div class="modal fade" id="modalEditarTipoAhorro" tabindex="-1" aria-labelledby="modalEditarTipoAhorroLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="post" id="formEditarTipoAhorro">
+      {% csrf_token %}
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalEditarTipoAhorroLabel">Editar Tipo de Ahorro</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="id" id="edit_tahorro_id">
+          <div class="mb-3">
+            <label for="edit_tahorro_abreviatura" class="form-label">Abreviatura</label>
+            <input type="text" class="form-control" id="edit_tahorro_abreviatura" name="tahorro_abreviatura" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit_tahorro_tipo" class="form-label">Tipo de Ahorro</label>
+            <input type="text" class="form-control" id="edit_tahorro_tipo" name="tahorro_tipo" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit_tahorro_dia_aporte" class="form-label">Día Aporte</label>
+            <input type="text" class="form-control" id="edit_tahorro_dia_aporte" name="tahorro_dia_aporte" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit_tahorro_meses_minimo" class="form-label">Meses de aporte</label>
+            <input type="text" class="form-control" id="edit_tahorro_meses_minimo" name="tahorro_meses_minimo" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit_tahorro_porcent_aporte" class="form-label">Aporte mínimo</label>
+            <input type="text" class="form-control" id="edit_tahorro_porcent_aporte" name="tahorro_porcent_aporte" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit_tahorro_capitalizacion" class="form-label">Capitalización</label>
+            <select class="form-select" id="edit_tahorro_capitalizacion" name="tahorro_capitalizacion" required>
+              <option value="" disabled>Seleccione</option>
+              {% for capitalizacion in capitalizaciones %}
+              <option value="{{ capitalizacion.id }}">{{ capitalizacion.cap_nombre }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="edit_tahorro_estado" name="tahorro_estado">
+            <label class="form-check-label" for="edit_tahorro_estado">Activo</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
