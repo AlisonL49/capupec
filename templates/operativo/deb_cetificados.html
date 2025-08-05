@@ -4,30 +4,42 @@
 
 <div class="container mt-4">
     <!-- Encabezado -->
-    <div class="card border-secondary">
-        <div class="card-header text-dark d-flex " style="background-color: #f5ea41">
+    <div class="card ">
+        <div class="card-custom-header  d-flex">
             <h5 class="mb-0">Registrar Certificados</h5>
         </div>
 
         <div class="card-body">
+            <!-- Mensajes de error -->
+            {% if messages %}
+            <div>
+                {% for message in messages %}
+                <div
+                    class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'warning' %}alert-warning{% else %}alert-success{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
             <!-- Filtros de Fecha -->
             <div class="row mb-3">
-                <div class="col-md-4">
-                    <label for="f_debito" class="form-label">F. Débito</label>
-                    <input type="date" id="f_debito" class="form-control" value="2024-01-10">
+                <div class="col-md-3">
+                    <label for="f_debito" class="form-label">Fecha Débito</label>
+                    <input type="date" id="f_debito" class="form-control">
                 </div>
-                <div class="col-md-4">
-                    <label for="fecha" class="form-label">Fecha</label>
-                    <input type="date" id="fecha" class="form-control" value="2024-01-10">
+                <div class="col-md-3">
+                    <label for="fecha" class="form-label">Fecha Actual</label>
+                    <input type="date" id="fecha" class="form-control">
                 </div>
-                <div class="col-md-4 d-flex align-items-end">
-                    <button class="btn btn-outline-secondary w-100">Procesar</button>
+                <div class="col-md-3 offset-md-3 d-flex justify-content-end align-items-end">
+                    <button class="btn btn-success">Procesar</button>
                 </div>
             </div>
 
             <!-- Tabla de Certificados -->
             <div class="table-responsive mb-3">
-                <table class="table table-bordered text-center">
+                <table class="table table-bordered table-hover rounded overflow-hidden text-center">
                     <thead class="table-dark">
                         <tr>
                             <th>N. SOCIO</th>
@@ -52,16 +64,11 @@
 
             <!-- Botones -->
             <div class="d-flex justify-content-end gap-2">
-                <button class="btn btn-primary">Listar</button>
-                <button class="btn btn-success">Guardar</button>
-                <button class="btn btn-danger">Salir</button>
+                <button class="btn btn-secondary">Listar</button>
+                <button class="btn btn-primary">Guardar</button>
             </div>
         </div>
     </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-
 
 {% endblock %}

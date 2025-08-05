@@ -4,12 +4,24 @@
 
 <div class="container mt-4">
     <!-- Encabezado -->
-    <div class="card border-secondary">
-        <div class="card-header text-dark d-flex " style="background-color: #f5ea41">
+    <div class="card">
+        <div class="card-custom-header  d-flex">
             <h5 class="mb-0">Registro de Pagos</h5>
         </div>
 
         <div class="card-body">
+            <!-- Mensajes de error -->
+            {% if messages %}
+            <div>
+                {% for message in messages %}
+                <div
+                    class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'warning' %}alert-warning{% else %}alert-success{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
             <!-- Filtros de Fecha y Tipo de Pago -->
             <div class="row mb-3">
                 <div class="col-md-4">
