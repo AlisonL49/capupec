@@ -3,7 +3,7 @@ from datetime import datetime
 from django.utils import timezone
 from administracion.models import DestinosCredito, FormasPago, TiposCredito
 from usuarios.models import PerfilUsuario
-
+from django.contrib.auth.models import User
 
 class CuentasAhorros(models.Model):
     ah_no_socio = models.ForeignKey(PerfilUsuario, on_delete=models.CASCADE)
@@ -18,8 +18,6 @@ class CuentasAhorros(models.Model):
         verbose_name_plural = 'CuentasAhorros'
         db_table = 'cuentasAhorros'
 
-from django.db import models
-from django.contrib.auth.models import User
 
 class HistorialTransacciones(models.Model):
     trans_usuario = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -62,7 +60,6 @@ class SolicitudesCredito(models.Model):
     sol_monto_total = models.DecimalField(max_digits=10, decimal_places=2)
     sol_valor_cuota = models.DecimalField(max_digits=10, decimal_places=2)
     sol_garante = models.BooleanField(default=False)
-    sol_nombres_garante = models.CharField(max_length=200, blank=True, null=True)
     sol_nro_garante = models.CharField(max_length=10, blank=True, null=True)
     sol_s_creditos = models.CharField(max_length=100, blank=True, null=True)
     sol_fecha_solicitud = models.DateField(default=timezone.now)
@@ -94,4 +91,40 @@ class SolicitudesCredito(models.Model):
                 verbose_name= 'SolicitudCredito'
                 verbose_name_plural= 'SolicitudesCreditos'
                 db_table= 'solicitudesCreditos'
- 
+
+
+class CreditosAprobados(models.Model):
+    credito_solicitud = models.ForeignKey(SolicitudesCredito, on_delete=models.CASCADE)
+    credito_usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    credito_fecha_aprobacion = models.DateField(default=timezone.now)
+    credito_estado = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"Credito {self.credito_solicitud.sol_nro_solicitud} "
+
+    class Meta:
+        verbose_name = 'CreditoAprobado'
+        verbose_name_plural = 'CreditosAprobados'
+        db_table = 'creditosAprobados'
+
+class PagosCredito(models.Model):
+    pago_credito = models.ForeignKey(CreditosAprobados, on_delete=models.CASCADE)
+    pago_usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    pago_fecha = models.DateField(default=timezone.now)
+    pago_monto_capital = models.DecimalField(max_digits=10, decimal_places=2)
+    pago_monto_interes = models.DecimalField(max_digits=10, decimal_places=2)
+    pago_monto_comision = models.DecimalField(max_digits=10, decimal_places=2)
+    pago_monto_seguro = models.DecimalField(max_digits=10, decimal_places=2)
+    pago_monto_total = models.DecimalField(max_digits=10, decimal_places=2)
+    pago_numero_cuota = models.IntegerField()
+    pago_fecha_vencimiento = models.DateField()
+    pago_estado = models.BooleanField(default=True)
+    pago_saldo_pendiente = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+    def __str__(self):
+        return f"Pago {self.pago_credito.credito_solicitud.sol_nro_solicitud}"
+
+    class Meta:
+        verbose_name = 'PagoCredito'
+        verbose_name_plural = 'PagosCreditos'
+        db_table = 'pagosCreditos'

@@ -4,8 +4,8 @@
 
 <div class="container mt-4">
     <!-- Encabezado -->
-    <div class="card border-secondary">
-        <div class="card-header text-dark d-flex " style="background-color: #f5ea41">
+    <div class="card ">
+        <div class="card-custom-header  d-flex">
             <h5 class="mb-0">Solicitud de Crédito</h5>
         </div>
 
@@ -25,12 +25,12 @@
             <div class="border rounded p-3 mb-3">
                 <div class="pb-3">
                     <!-- formulario de búsqueda -->
-                    <label for="garante" class="form-label">Buscar Socio</label>
+                    <label for="buscar" class="form-label">Buscar Socio</label>
                     {% include 'partials/formulario_busqueda.html' %}
                 </div>
                 <!-- Tabla de Búsqueda -->
                 <div class="table-responsive mb-3">
-                    <table class="table table-bordered text-center">
+                    <table class="table table-bordered rounded table-hover text-center">
                         <thead class="table-dark">
                             <tr>
                                 <th>NOMBRES</th>
@@ -43,7 +43,7 @@
                             {% if search_query %}
                             {% for usuario in usuarios %}
                             <tr class="fila-socio" data-usuario-id="{{ usuario.id }}" style="cursor: pointer;">
-                                <td>{{ usuario.last_name }} {{ usuario.first_name }}</td>
+                                <td>{{ usuario.user.last_name }} {{ usuario.user.first_name }}</td>
                                 <td>{{ usuario.cedula }}</td>
                                 <td>{{ usuario.id }}</td>
                                 <td><a href="?seleccionar={{ usuario.id }}">Seleccionar</a></td>
@@ -87,8 +87,7 @@
                         </div>
                         <div class="col-md-2">
                             <label for="num_solicitud" class="form-label">Nro. Solicitud</label>
-                            <input type="text" id="num_solicitud" name="sol_nro_solicitud" class="form-control"
-                                value="{{ valores_ingresados.num_solicitud }}">
+                            <input type="text" id="num_solicitud" name="sol_nro_solicitud" class="form-control">
                         </div>
                     </div>
 
@@ -97,12 +96,11 @@
                     <div class="row mb-3 align-items-end">
                         <div class="col-md-1">
                             <label for="garante" class="form-label">Garante</label>
-                            <input class="form-check-input" type="checkbox" id="garante_checkbox" name="sol_garante" {% if valores_ingresados.nombre_garante %}checked{% endif %}>
+                            <input class="form-check-input" type="checkbox" id="garante_checkbox" name="sol_garante" >
                         </div>
                         <div class="col-md-6">
                             <label for="nombre_garante" class="form-label">Nombres Garante</label>
-                            <input type="text" id="nombre_garante" name="sol_nombres_garante"
-                                value="{{ valores_ingresados.nombre_garante }}"
+                            <input type="text" id="nombre_garante" value="{{ valores_ingresados.nombre_garante }}"
                                 class="form-control autocomplete-garante" disabled>
                         </div>
                         <div class="col-md-2">
@@ -112,21 +110,20 @@
                         </div>
                         <div class="col-md-3">
                             <label for="s_creditos" class="form-label">S. Créditos</label>
-                            <input type="text" id="s_creditos" name="sol_s_creditos"
-                                value="{{ valores_ingresados.s_creditos }}" class="form-control" disabled>
+                            <input type="text" id="s_creditos" value="{{ valores_ingresados.s_creditos }}"
+                                class="form-control" disabled>
                         </div>
                     </div>
 
                     <div class="row mb-3">
                         <!-- Tipo de Crédito -->
                         <div class="col-md-4">
-
                             <label for="tipo_credito" class="form-label">Tipo Crédito</label>
                             <select id="tipo_credito" name="sol_tipo_credito" class="form-select">
                                 <option value="">Seleccione ...</option>
                                 {% for credito in tipos_credito %}
-                                <option value="{{ credito.id }}" {% if credito.id|stringformat:"s" == valores_ingresados.tipo_credito_id|stringformat:"s" %}selected{% endif %}>
-                                    {{ credito.tcredito_descripcion }}
+                                <option value="{{ credito.id }}" >
+                                    {{ credito.tcredito_tipo }}
                                 </option>
                                 {% endfor %}
                             </select>
@@ -139,7 +136,7 @@
                             <select id="forma_pago" name="sol_forma_pago" class="form-select">
                                 <option value="">Seleccione ...</option>
                                 {% for pago in formas_pago %}
-                                <option value="{{ pago.id }}" {% if valores_ingresados.forma_pago == pago.id|stringformat:"s" %}selected{% endif %}>
+                                <option value="{{ pago.id }}" >
                                     {{ pago.fpago_descripcion }}</option>
                                 {% endfor %}
                             </select>
@@ -177,7 +174,7 @@
                         <div class="col-md-3">
                             <label for="tipo_tabla" class="form-label">Tipo Tabla</label>
                             <select id="tipo_tabla" name="sol_tipo_tabla" class="form-select">
-                                <option value="FRANCESA" {% if valores_ingresados.tipo_tabla == "FRANCESA" %}selected{% endif %}>FRANCESA</option>
+                                <option value="FRANCESA" >FRANCESA</option>
                                 <!--<option value="ALEMAN" {% if valores_ingresados.tipo_tabla == "ALEMAN" %}selected{% endif %}>ALEMAN</option>-->
                             </select>
 
@@ -190,7 +187,6 @@
                             <label for="aportes" class="form-label">No. Aportes</label>
                             <input type="text" id="aportes" class="form-control" disabled value="{{ nro_aportes }}"
                                 readonly>
-
 
                         </div>
                         <div class="col-md-3">
@@ -212,8 +208,7 @@
 
                     <!-- Botones -->
                     <div class="d-flex justify-content-end gap-2">
-                        <button type="submit" class="btn btn-warning"
-                            onclick="document.getElementById('accion').value='calcular_credito'">Calcular</button>
+                        <button type="submit" class="btn btn-warning">Calcular</button>
                         <button type="submit" class="btn btn-primary">Guardar</button>
                         <button type="reset" class="btn btn-secondary">Limpiar</button>
                     </div>
@@ -222,33 +217,27 @@
                     <div class="row mb-3 mt-4">
                         <div class="col-md-2">
                             <label for="v_solicitud" class="form-label">V.Solicitud</label>
-                            <input type="text" id="v_solicitud" class="form-control" value="0.00" readonly>
+                            <input type="text" id="v_solicitud" class="form-control" readonly>
                         </div>
                         <div class="col-md-2">
                             <label for="comision" class="form-label">Comisión</label>
-                            <input type="text" id="comision" class="form-control" value="0.00" readonly>
+                            <input type="text" id="comision" class="form-control" readonly>
                         </div>
                         <div class="col-md-2">
                             <label for="v_encaje" class="form-label">V.Encaje</label>
-                            <input type="text" id="v_encaje" class="form-control" value="{{ encaje }}" readonly>
+                            <input type="text" id="v_encaje" class="form-control" readonly>
                         </div>
                         <div class="col-md-2">
                             <label for="monto_total" class="form-label">Monto Total</label>
-                            <input type="text" id="monto_total" class="form-control"  value="0.00" readonly>
+                            <input type="text" id="monto_total" class="form-control" readonly>
                         </div>
                         <div class="col-md-4 d-flex align-items-end">
 
-                            <form action="{% url 'pdf_amortizacion' %}" method="post" target="_blank" class="w-100">
-                                {% csrf_token %}
-                                <input type="hidden" name="monto" value="{{ valores_ingresados.monto }}">
-                                <input type="hidden" name="cuotas" value="{{ valores_ingresados.cuotas }}">
-                                <input type="hidden" name="interes" value="{{ interes }}">
-                                <input type="hidden" name="tipo_credito"
-                                    value="{{ valores_ingresados.tipo_credito_id }}">
-                                <button type="submit" class="btn btn-outline-primary w-100">
-                                    <i class="fas fa-print"></i> Imprimir
-                                </button>
-                            </form>
+
+                            <button type="submit" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-print"></i> Imprimir
+                            </button>
+
 
                         </div>
 
@@ -289,31 +278,10 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script src="{% static 'js/autocomplete.js' %}"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // Seleccionar todas las filas de socios
-        const filasSocios = document.querySelectorAll('.fila-socio');
-        const inputNroSocio = document.getElementById('nroSocio');
-
-
-        // Agregar evento click a cada fila
-        filasSocios.forEach(fila => {
-            fila.addEventListener('click', function () {
-                // Remover clase 'table-primary' de todas las filas
-                filasSocios.forEach(f => f.classList.remove('table-primary'));
-                // Agregar clase 'table-primary' a la fila seleccionada
-                this.classList.add('table-primary');
-                // Obtener el ID del usuario desde el atributo data
-                const usuarioId = this.getAttribute('data-usuario-id');
-                // Actualizar el valor del campo No. Socio
-                inputNroSocio.value = usuarioId;
-            });
-        });
-
-
         //Activar los campos garante 
         const checkbox = document.getElementById("garante_checkbox");
         const fields = [
@@ -328,86 +296,30 @@
             });
         });
 
-        // Función para calcular valores del crédito
-        function calcularCredito() {
-            const monto = parseFloat(document.getElementById('monto').value) || 0;
-            const interes = parseFloat(document.getElementById('interes').value) || 0;
-            const cuotas = parseInt(document.getElementById('cuotas').value) || 0;
-            const tipoCreditoSelect = document.getElementById('tipo_credito');
-            const encajePorcentaje = parseFloat(tipoCreditoSelect.selectedOptions[0].getAttribute('data-encaje')) || 0;
-            const seguroValor = parseFloat("{{ seguro_valor }}") || 0;
-            const comisionValor = parseFloat("{{ comision_valor }}") || 0;
-
-             document.getElementById('v_solicitud').value = monto.toFixed(2);
-            document.getElementById('comision').value = (monto * comisionValor / 100).toFixed(2);
-            document.getElementById('v_encaje').value = (monto * encajePorcentaje / 100).toFixed(2);
-            document.getElementById('monto_total').value = (monto * (1 + seguroValor / 100)).toFixed(2);
-
-            // Calcular la tabla de amortización
-            const amortizacion = calcularAmortizacionFrancesa(monto, interes, cuotas, seguroValor, comisionValor, encajePorcentaje);
-
-            // Actualizar la tabla de amortización en el DOM
-            const tbody = document.querySelector('table.table-bordered.table-striped tbody');
-            tbody.innerHTML = ''; // Limpiar el contenido actual
-
-             amortizacion.forEach(cuota => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${cuota.numero}</td>
-                    <td>${cuota.fecha_pago}</td>
-                    <td>${cuota.capital.toFixed(2)}</td>
-                    <td>${cuota.interes.toFixed(2)}</td>
-                    <td>${cuota.seguro.toFixed(2)}</td>
-                    <td>${cuota.cuota_total.toFixed(2)}</td>
-                    <td>${cuota.saldo.toFixed(2)}</td>
-                `;
-                tbody.appendChild(row);
-            });        
-        }
-
-         // Función para calcular la amortización francesa
-        function calcularAmortizacionFrancesa(monto, interes, cuotas, seguroValor, comisionValor, encajePorcentaje) {
-            const amortizacion = [];
-            let saldo = monto;
-            const interesMensual = interes / 100 / 12;
-            const cuotaTotal = saldo * interesMensual / (1 - Math.pow(1 + interesMensual, -cuotas));
-
-            for (let i = 1; i <= cuotas; i++) {
-                const interesMensualValor = saldo * interesMensual;
-                const capital = cuotaTotal - interesMensualValor;
-                saldo -= capital;
-
-                amortizacion.push({
-                    numero: i,
-                    fecha_pago: new Date(new Date().setMonth(new Date().getMonth() + i)).toISOString().split('T')[0],
-                    capital: capital,
-                    interes: interesMensualValor,
-                    seguro: seguroValor,
-                    cuota_total: cuotaTotal + seguroValor,
-                    saldo: saldo > 0 ? saldo : 0,
-                });
-            }
-            return amortizacion;
-        }
-
-        //Guardar datos seleccionados
-        const tipoCreditoSelect = document.getElementById("tipo_credito");
-        const accionInput = document.getElementById("accion");
-
-        tipoCreditoSelect.addEventListener("change", function () {
-            accionInput.value = "cambio_tipo_credito";
-            this.closest("form").submit();
-        });
-
-        // Asignar evento al botón Calcular
-        document.querySelector('.btn-warning').addEventListener('click', function (e) {
-            e.preventDefault();
-            calcularCredito();
-        });
-
         // Inicializar autocompletado con ID del garante
         inicializarAutocompleteConId("#nombre_garante", "{% url 'buscar_usuarios' %}", "#num_garante");
+
+        const socioInput = document.getElementById("nroSocio");
+        const garanteCheckbox = document.getElementById("garante_checkbox");
+        const numGaranteInput = document.getElementById("num_garante");
+
+        if (socioInput) {
+            const socioId = socioInput.value;
+            cargarDatosCredito(socioId);
+
+            garanteCheckbox.addEventListener("change", () => {
+                const garanteId = garanteCheckbox.checked ? numGaranteInput.value : null;
+                cargarDatosCredito(socioId, garanteId);
+            });
+
+            numGaranteInput.addEventListener("blur", () => {
+                if (garanteCheckbox.checked && numGaranteInput.value) {
+                    cargarDatosCredito(socioId, numGaranteInput.value);
+                }
+            });
+        }
     });
+
 </script>
 
 {% endblock %}

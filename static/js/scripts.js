@@ -523,7 +523,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // Validación de formulario de crédito 
+    // Validación de formulario de crédito ***ANTERIOR***
     const creditoForm = document.getElementById("creditoForm");
     if (creditoForm) {
         creditoForm.addEventListener("submit", function (event) {
@@ -641,5 +641,34 @@ function descargarSimulacion() {
             new bootstrap.Modal(document.getElementById('deleteSocioModal')).show();
         });
     });
+
+// Cargar datos de crédito al seleccionar socio o garante
+    function cargarDatosCredito(socioId, garanteId = null) {
+    const url = `/obtener-datos-credito/?socio_id=${socioId}&garante_id=${garanteId || ''}`;
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.num_solicitud) {
+                document.getElementById('num_solicitud').value = data.num_solicitud;
+            }
+            if (data.no_aportes !== undefined) {
+                document.getElementById('aportes').value = data.no_aportes;
+            }
+            if (data.v_aportes !== undefined) {
+                document.getElementById('v_aportes').value = data.v_aportes.toFixed(2);
+            }
+            if (data.disponible !== undefined) {
+                document.getElementById('disponible').value = data.disponible.toFixed(2);
+            }
+            if (data.s_creditos !== undefined) {
+                document.getElementById('s_creditos').value = data.s_creditos.toFixed(2);
+            }
+        })
+        .catch(error => {
+            console.error('Error al obtener datos del crédito:', error);
+        });
+}
+
 
 

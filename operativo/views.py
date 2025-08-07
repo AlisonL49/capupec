@@ -56,8 +56,8 @@ def solicitud(request):
     formas_pago = FormasPago.objects.all()
     usuarios = PerfilUsuario.objects.all().order_by('user__last_name', 'user__first_name')
     solicitud_form = SolicitudesCreditoForm()
-    seguro = Parametros.objects.get(parm_nombre='SEGUROGRAV')
-    comision = Parametros.objects.get(parm_nombre='COMISION')
+    seguro = Parametros.objects.get(parm_abreviatura='SEGUROGRAV')
+    comision = Parametros.objects.get(parm_abreviatura='COMISION')
 
     accion = ''
     socio_seleccionado = None
@@ -65,35 +65,20 @@ def solicitud(request):
     nombre_garante = ''
     num_garante = ''
     s_creditos = ''
-    tipo_credito_id = ''
-    comision_valor = 0
-    encaje_valor = 0
-    monto_total = 0
-    tabla_amortizacion = []
-    interes = gracia = nro_aportes = valor_aportes = ''
 
     valores_ingresados = {
-        'num_solicitud': '',
+        
         'nombre_garante': '',
         'num_garante': '',
         's_creditos': '',
-        'tipo_credito_id': '',
-        'forma_pago': '',
-        'tipo_tabla': '',
-        'condicion': '',
-        'disponible': '',
-        'monto': '',
-        'cuotas': '',
-        'tipos_credito': '',
-        'seguro_valor': seguro.parm_valor,
-        'comision_valor': comision.parm_valor,
+        
        
     }
     # Aplicar búsqueda
     usuarios, search_query, category = resultados_busqueda(
         request,
         usuarios,
-        search_fields=['first_name', 'last_name']
+        search_fields=['user__first_name', 'user__last_name']
     )
 
     # Obtener socio seleccionado por búsqueda
@@ -102,72 +87,19 @@ def solicitud(request):
         socio_seleccionado = PerfilUsuario.objects.filter(id=usuario_id).first()
         condicion_socio = socio_seleccionado.nombramiento if socio_seleccionado else ''
 
-    # POST para cambio de tipo de crédito o guardar solicitud
-    if request.method == 'POST':
-        accion = request.POST.get('accion', '')
-
-        # Recoger campos del formulario
-        valores_ingresados['num_solicitud'] = request.POST.get(
-            'sol_nro_solicitud', '')
-        valores_ingresados['nombre_garante'] = request.POST.get(
-            'sol_nombres_garante', '')
-        valores_ingresados['num_garante'] = request.POST.get(
-            'sol_nro_garante', '')
-        valores_ingresados['s_creditos'] = request.POST.get(
-            'sol_s_creditos', '')
-        valores_ingresados['tipo_credito_id'] = request.POST.get(
-            'sol_tipo_credito', '')
-        valores_ingresados['forma_pago'] = request.POST.get(
-            'sol_forma_pago', '')
-        valores_ingresados['tipo_tabla'] = request.POST.get(
-            'sol_tipo_tabla', '')
-        valores_ingresados['condicion'] = request.POST.get('sol_condicion', '')
-        valores_ingresados['disponible'] = request.POST.get(
-            'sol_disponible', '')
-        valores_ingresados['monto'] = request.POST.get('sol_monto', '')
-        valores_ingresados['cuotas'] = request.POST.get('sol_cuotas', '')
-
-    # Recuperar datos si se recarga por selección de tipo de crédito
-    socio_id = request.GET.get('sol_socio')
-    if socio_id and not socio_seleccionado:
-        socio_seleccionado = PerfilUsuario.objects.filter(id=socio_id).first()
-        condicion_socio = socio_seleccionado.nombramiento if socio_seleccionado else ''
-
+  
+    
     # Obtener datos del garante si existen
     num_garante = valores_ingresados['num_garante']
     if num_garante:
         garante = PerfilUsuario.objects.filter(id=num_garante).first()
         if garante:
-            nombre_garante = f"{garante.first_name} {garante.last_name}"
+            nombre_garante = f"{garante.user.first_name} {garante.user.last_name}"
             # Aquí podrías calcular `s_creditos` si tienes lógica
             s_creditos = '0'  # reemplaza con cálculo real si aplica
 
   
-    # Capturar selección de tipo de crédito
-    tipo_credito_id = valores_ingresados['tipo_credito_id']
-    if tipo_credito_id and accion == "cambio_tipo_credito":
-       try:
-           tipo = TiposCredito.objects.get(id=tipo_credito_id)
-           interes = tipo.tcredito_tasa_interes
-           gracia = tipo.tcredito_gracia
-           encaje = tipo.tcredito_porcentaje_encaje
-           nro_aportes = tipo.tcredito_num_cuotas
-           valor_aportes = tipo.tcredito_aporte_minimo
-       except TiposCredito.DoesNotExist:
-           pass
-       
-    # Guardar solicitud de crédito
-    elif accion == "guardar_solicitud":
-        solicitud_form = SolicitudesCreditoForm(request.POST)
-        if solicitud_form.is_valid() and socio_seleccionado:
-            solicitud = solicitud_form.save(commit=False)
-            solicitud.socio = socio_seleccionado
-            solicitud.save()
-            messages.success(request, "Solicitud de crédito registrada exitosamente.")
-            return redirect('solicitud')
-        else:
-            messages.error(request, "Por favor revise los datos ingresados.")
-
+    
 
     return render(request, 'operativo/solicitud.html', {
         'titulo': 'Operativo',
@@ -177,11 +109,6 @@ def solicitud(request):
         'usuarios': usuarios,
         'socio_seleccionado': socio_seleccionado,
         'condicion': condicion_socio,
-        'tipo_credito_id': tipo_credito_id,
-        'interes': interes,
-        'gracia': gracia,
-        'nro_aportes': nro_aportes,
-        'valor_aportes': valor_aportes,
         'solicitud_form': solicitud_form,
         'search_query': search_query,
         'selected_category': category,
@@ -194,6 +121,36 @@ def solicitud(request):
             {'value': 'inactivo', 'label': 'Inactivos'},
         ],
     })
+
+# views.py
+from django.http import JsonResponse
+from django.db.models import Sum, Count
+from .models import HistorialTransacciones, CuentasAhorros, SolicitudesCredito, PerfilUsuario, PagosCredito
+
+def obtener_datos_credito(request, socio_id=None, garante_id=None):
+    data = {}
+
+    # Generar número de solicitud: SC001, SC002, etc.
+    ultimo = SolicitudesCredito.objects.all().order_by('-id').first()
+    nuevo_num = 1 if not ultimo else int(ultimo.sol_nro_solicitud.replace('SC', '')) + 1
+    data['num_solicitud'] = f'SC{nuevo_num:03d}'
+
+    if socio_id:
+        # Aportes del socio
+        aportes = HistorialTransacciones.objects.filter(trans_usuario_id=socio_id, trans_tipo='ahorro')
+        data['no_aportes'] = aportes.count()
+        data['v_aportes'] = float(aportes.aggregate(suma=Sum('trans_valor'))['suma'] or 0)
+
+        # Saldo disponible
+        cuenta = CuentasAhorros.objects.filter(ah_no_socio_id=socio_id).first()
+        data['disponible'] = float(cuenta.ah_saldo) if cuenta else 0
+
+    if garante_id:
+        # Créditos del garante
+        creditos = PagosCredito.objects.filter(pago_usuario_id=garante_id)
+        data['s_creditos'] = float(creditos.aggregate(total=Sum('pago_saldo_pendiente'))['total'] or 0)
+
+    return JsonResponse(data)
 
 @admin_required
 def calcular_amortizacion_francesa(monto, interes, cuotas, seguro, comision, encaje):
@@ -333,9 +290,7 @@ def obtener_saldo_usuario(request):
         except Exception as e:
             return JsonResponse({'saldo': '0.00'})
     return JsonResponse({'saldo': '0.00'})
-
-
-            
+         
 def registrar_aporte(request):
     if request.method == 'POST':
         socio_id = request.POST.get('ah_no_socio')
@@ -374,8 +329,6 @@ def registrar_aporte(request):
             return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
     return JsonResponse({'success': False, 'error': 'Método no permitido'}, status=400)
-
-
 
 @xframe_options_exempt
 def generar_recibo_pdf(request, usuario_id, aporte):

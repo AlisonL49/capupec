@@ -15,7 +15,7 @@ class SolicitudesCreditoForm(forms.ModelForm):
         fields = [
             'sol_socio', 'sol_tipo_credito', 'sol_forma_pago','sol_tipo_tabla',
             'sol_nro_solicitud', 'sol_monto', 'sol_cuotas', 'sol_disponible', 'sol_comision',
-            'sol_valor_encaje', 'sol_monto_total', 'sol_valor_cuota', 'sol_garante', 'sol_nombres_garante',
+            'sol_valor_encaje', 'sol_monto_total', 'sol_valor_cuota', 'sol_garante',
             'sol_nro_garante', 'sol_s_creditos'
         ]
 

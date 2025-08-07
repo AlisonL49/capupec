@@ -21,46 +21,47 @@
                 {% endfor %}
             </div>
             {% endif %}
-            
-            <!-- Filtros de Fecha y Tipo de Pago -->
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <label for="f_rep" class="form-label">F. Rep.</label>
-                    <input type="date" id="f_rep" class="form-control" value="2024-02-11">
-                </div>
-                <div class="col-md-4">
-                    <label for="fecha" class="form-label">Fecha</label>
-                    <input type="date" id="fecha" class="form-control" value="2024-02-11">
-                </div>
-                <div class="col-md-4 d-flex align-items-end">
-                    <button class="btn btn-outline-secondary w-100">Procesar</button>
-                </div>
-            </div>
 
-            <!-- Opciones de Pago -->
-            <div class="mb-3">
-                <label class="form-label">Tipo de Pago:</label>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="tipoPago" id="ahorros" checked>
-                    <label class="form-check-label" for="ahorros">Ahorros</label>
+            <div class="row mb-3">
+                <!-- Filtros de Fecha y Tipo de Pago -->
+                <div class="col-md-2 ">
+                    <label for="f_rep" class="form-label">F. Rep.</label>
+                    <input type="date" id="f_rep" class="form-control">
                 </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="tipoPago" id="prestamos">
-                    <label class="form-check-label" for="prestamos">Préstamos</label>
+                <div class="col-md-2">
+                    <label for="fecha" class="form-label">Fecha</label>
+                    <input type="date" id="fecha" class="form-control">
                 </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="tipoPago" id="ah_futuro">
-                    <label class="form-check-label" for="ah_futuro">Ah. Futuro</label>
+                <!-- Opciones de Pago -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Tipo de Pago:</label>
+                    <div class="border rounded p-2 mb-3 d-flex justify-content-around">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="tipoPago" id="ahorros" checked>
+                            <label class="form-check-label text-dark" for="ahorros">Ahorros</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="tipoPago" id="prestamos">
+                            <label class="form-check-label text-dark" for="prestamos">Préstamos</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="tipoPago" id="ah_futuro">
+                            <label class="form-check-label text-dark" for="ah_futuro">Ah. Futuro</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="tipoPago" id="multas">
+                            <label class="form-check-label text-dark" for="multas">Multas</label>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="tipoPago" id="multas">
-                    <label class="form-check-label" for="multas">Multas</label>
+                <div class="col-md-2 d-flex justify-content-end align-items-center">
+                    <button class="btn btn-success">Procesar</button>
                 </div>
             </div>
 
             <!-- Tabla de Pagos -->
-            <div class="table-responsive mb-3">
-                <table class="table table-bordered text-center">
+             <div class="table-responsive mb-3">
+                <table class="table table-bordered rounded overflow-hidden text-center">
                     <thead class="table-dark">
                         <tr>
                             <th>N. SOCIO</th>
@@ -70,28 +71,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>001</td>
-                            <td>Juan Pérez</td>
-                            <td>$200.00</td>
-                            <td>$50.00</td>
-                        </tr>
-                        <tr>
-                            <td>002</td>
-                            <td>María López</td>
-                            <td>$300.00</td>
-                            <td>$70.00</td>
-                        </tr>
+                        
                     </tbody>
                 </table>
             </div>
 
             <!-- Botones -->
             <div class="d-flex justify-content-end gap-2">
-                <button class="btn btn-primary">Consultar</button>
-                <button class="btn btn-success">Guardar</button>
-                <button class="btn btn-warning">Imprimir</button>
-                <button class="btn btn-danger">Salir</button>
+                <button class="btn btn-secondary">Consultar</button>
+                <button class="btn btn-primary">Guardar</button>
+                <button class="btn btn-success">Imprimir</button>
             </div>
         </div>
     </div>
