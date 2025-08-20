@@ -115,7 +115,7 @@ class TiposCredito(models.Model):
     tcredito_tasa_interes = models.DecimalField(max_digits=5, decimal_places=2)
     tcredito_porcentaje_mora = models.DecimalField(max_digits=5, decimal_places=2)
     tcredito_num_cuotas = models.IntegerField()
-    tcredito_aporte_minimo = models.DecimalField(max_digits=10, decimal_places=2)
+    tcredito_aporte_minimo = models.IntegerField()
     tcredito_porcentaje_encaje = models.DecimalField(max_digits=5, decimal_places=2)
     tcredito_gracia = models.IntegerField()
     tcredito_estado = models.BooleanField(default=True)

@@ -20,14 +20,14 @@ class CuentasAhorros(models.Model):
 
 
 class HistorialTransacciones(models.Model):
-    trans_usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    trans_usuario = models.ForeignKey(PerfilUsuario, on_delete=models.CASCADE)
     trans_tipo = models.CharField(max_length=10)
     trans_valor = models.DecimalField(max_digits=10, decimal_places=2)
     trans_saldo = models.DecimalField(max_digits=10, decimal_places=2)
     trans_fecha = models.DateTimeField()
 
     def __str__(self):
-        return f"{self.trans_usuario.username} - {self.trans_tipo} - {self.trans_valor}"
+        return f"{self.trans_usuario} - {self.trans_tipo} - {self.trans_valor}"
 
     class Meta:
         ordering = ['-trans_fecha']

@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 
 from operativo.views import obtener_saldo_usuario_por_id
-from .models import PerfilUsuario, Roles, EstadoCivil
+from .models import PerfilUsuario, Roles, EstadoCivil, Carreras
 from .forms import UsuarioForm
 from sistema.views import admin_required
 
@@ -14,6 +14,7 @@ from sistema.views import admin_required
 def crear_usuario(request):
     roles = Roles.objects.all()
     estado_civil = EstadoCivil.objects.all()
+    carreras = Carreras.objects.all()
 
     search_query = request.GET.get('q', '').strip()
     perfiles = PerfilUsuario.objects.select_related('user')
@@ -102,6 +103,7 @@ def crear_usuario(request):
         "form": form,
         'estado_civil': estado_civil,
         'roles': roles,
+        'carreras': carreras,
         'perfiles': perfiles,
         'search_query': search_query,
         

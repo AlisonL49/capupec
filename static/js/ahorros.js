@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const formData = new FormData(form);
 
-            fetch('registrar-aporte/', {
+            fetch('/operativo/registrar-aporte/', {
                 method: 'POST',
                 body: formData,
                 headers: {

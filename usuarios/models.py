@@ -23,6 +23,17 @@ class EstadoCivil(models.Model):
         verbose_name_plural= 'EstadosCiviles'
         db_table = 'estadoCivil'
 
+class Carreras(models.Model):
+    carrera = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.carrera
+
+    class Meta: 
+        verbose_name= 'Carrera'
+        verbose_name_plural= 'Carreras'
+        db_table = 'carreras'
+
 
 class PerfilUsuario(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -33,7 +44,7 @@ class PerfilUsuario(models.Model):
     fecha_ingreso = models.DateField()
     genero = models.CharField(max_length=15, choices=[("M", "Masculino"), ("F", "Femenino")], null=True, blank=True)
     nombramiento = models.CharField(max_length=15, choices=[("Titular", "Titular"), ("Contrato", "A Contrato")])
-    lugar_trabajo = models.CharField(max_length=100)
+    lugar_trabajo = models.ForeignKey(Carreras, on_delete=models.CASCADE)
     ciudad = models.CharField(max_length=50)
     direccion = models.TextField()
     telefono = models.CharField(max_length=10)

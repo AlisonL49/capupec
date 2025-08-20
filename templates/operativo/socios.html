@@ -101,7 +101,12 @@
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label for="trabajo" class="form-label">Lugar de Trabajo/Carrera</label>
-                            <input type="text" id="trabajo" name="lugar_trabajo" class="form-control" required>
+                            <select class="form-select " id="trabajo" name="lugar_trabajo" required>
+                                <option value="" disabled selected>Seleccione... </option>
+                                {% for carrera in carreras %}
+                                <option value="{{ carrera.id }}">{{ carrera.carrera }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                         <div class="col-md-3">
                             <label for="fecha_ingreso" class="form-label">Fecha de Ingreso</label>
@@ -135,7 +140,7 @@
                         </div>
                         <div class="col-md-2 d-flex align-items-end">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="estado" name="estado">
+                                <input class="form-check-input" type="checkbox" id="estado" name="estado" checked>
                                 <label class="form-check-label" for="estado">Estado</label>
                             </div>
                         </div>

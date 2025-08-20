@@ -4,11 +4,14 @@ from operativo import views
 urlpatterns = [    
     path('consulta-garantias/', views.consulta_garantias, name='consulta-garantias'),
     path('solicitud/', views.solicitud, name='solicitud'),
-    path('obtener-datos-credito/', views.obtener_datos_credito, name='obtener_datos_credito'),
+    path('get_credit_details/', views.get_credit_details, name='get_credit_details'),
+    
+    #path('obtener-datos-credito/', views.obtener_datos_credito, name='obtener_datos_credito'),
+    path('solicitud-credito/imprimir/', views.imprimir_solicitud_credito, name='imprimir_solicitud_credito'),
     path('pdf-amortizacion/', views.generar_pdf_amortizacion, name='pdf_amortizacion'),
     path('consulta-aprobacion/', views.consulta_aprobacion, name='consulta-aprobacion'),
     path('ahorros/', views.ahorros, name='ahorros'),
-    path('ahorros/registrar-aporte/', views.registrar_aporte, name='registrar_aporte'),
+    path('registrar-aporte/', views.registrar_aporte, name='registrar_aporte'),
     path('ahorros/recibo-pdf/<int:usuario_id>/<str:aporte>/', views.generar_recibo_pdf, name='generar_recibo_pdf'),
 
     path('ahorro-futuro/',views.ahorro_futuro, name='ahorro-futuro'),
