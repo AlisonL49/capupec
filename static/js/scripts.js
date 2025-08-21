@@ -183,12 +183,13 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // Botón Imprimir
+        
         if (btnImprimir) {
             btnImprimir.addEventListener("click", function (e) {
                 e.preventDefault();
                 const socioId = this.getAttribute("data-socio-id");
                 if (socioId) {
-                    window.open(`/solicitud-credito/imprimir/${socioId}/`, "_blank");
+                    window.open(`/operativo/solicitud/imprimir/${socioId}/`, "_blank");
                 } else {
                     alert("Debe seleccionar un socio antes de imprimir.");
                 }

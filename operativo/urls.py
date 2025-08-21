@@ -5,9 +5,8 @@ urlpatterns = [
     path('consulta-garantias/', views.consulta_garantias, name='consulta-garantias'),
     path('solicitud/', views.solicitud, name='solicitud'),
     path('get_credit_details/', views.get_credit_details, name='get_credit_details'),
-    
-    #path('obtener-datos-credito/', views.obtener_datos_credito, name='obtener_datos_credito'),
-    path('solicitud-credito/imprimir/', views.imprimir_solicitud_credito, name='imprimir_solicitud_credito'),
+    path("solicitud/imprimir/<int:socio_id>/", views.imprimir_solicitud_credito, name="imprimir_solicitud_credito"),
+
     path('pdf-amortizacion/', views.generar_pdf_amortizacion, name='pdf_amortizacion'),
     path('consulta-aprobacion/', views.consulta_aprobacion, name='consulta-aprobacion'),
     path('ahorros/', views.ahorros, name='ahorros'),

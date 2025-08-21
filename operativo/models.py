@@ -46,24 +46,36 @@ class TablasAmortizacion (models.Model):
         verbose_name_plural= 'TablasAmortizaciones'
         db_table = 'tablasAmortizaciones'
 
+class estadosSolicitud(models.Model):
+    estado_nombre = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.estado_nombre
+    
+    class Meta:
+        verbose_name = 'EstadoSolicitud'
+        verbose_name_plural = 'EstadosSolicitudes'
+        db_table = 'estadosSolicitudes'
+
 class SolicitudesCredito(models.Model):
+    sol_nombre = models.CharField(max_length=100, null=True, blank=True)
     sol_socio = models.ForeignKey(PerfilUsuario, on_delete=models.CASCADE)
     sol_tipo_credito = models.ForeignKey(TiposCredito, on_delete=models.CASCADE)
     sol_forma_pago = models.ForeignKey(FormasPago, on_delete=models.CASCADE)
-    sol_tipo_tabla = models.ForeignKey(TablasAmortizacion, on_delete=models.CASCADE)
+    sol_tipo_tabla = models.ForeignKey(TablasAmortizacion, on_delete=models.CASCADE, default=1)
     sol_nro_solicitud = models.CharField(max_length=10, unique=True)
     sol_monto = models.DecimalField(max_digits=10, decimal_places=2)
     sol_cuotas = models.IntegerField()
-    sol_disponible = models.DecimalField(max_digits=10, decimal_places=2)
     sol_comision = models.DecimalField(max_digits=10, decimal_places=2)
     sol_valor_encaje = models.DecimalField(max_digits=10, decimal_places=2)
     sol_monto_total = models.DecimalField(max_digits=10, decimal_places=2)
-    sol_valor_cuota = models.DecimalField(max_digits=10, decimal_places=2)
     sol_garante = models.BooleanField(default=False)
-    sol_nro_garante = models.CharField(max_length=10, blank=True, null=True)
-    sol_s_creditos = models.CharField(max_length=100, blank=True, null=True)
+    sol_nro_garante = models.IntegerField(null=True, blank=True)
+    sol_saldo_credito = models.DecimalField(max_digits=10, decimal_places=2)
     sol_fecha_solicitud = models.DateField(default=timezone.now)
-    sol_fecha_vencimiento = models.DateField()
+    sol_estado = models.ForeignKey(estadosSolicitud, on_delete=models.CASCADE)
+
+
 
     def __str__(self):
         return f"Solicitud {self.sol_nro_solicitud} - Socio: {self.sol_socio}"

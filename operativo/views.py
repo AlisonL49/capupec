@@ -6,20 +6,19 @@ from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.clickjacking import xframe_options_exempt
-from django.db.models import Max
 from datetime import date, datetime, timedelta
-from decimal import Decimal, getcontext, ROUND_HALF_UP
+from decimal import Decimal, ROUND_HALF_UP
 from django.urls import reverse
-from administracion.models import DestinosCredito,  FormasPago, Representantes, TiposCredito, Parametros
-from operativo.utils import generar_amortizacion_francesa
+from administracion.models import FormasPago, Representantes, TiposCredito, Parametros
 from usuarios.models import Roles, EstadoCivil, PerfilUsuario
-from .models import CuentasAhorros, HistorialTransacciones, SolicitudesCredito,PagosCredito
+from .models import CreditosAprobados, CuentasAhorros, HistorialTransacciones, SolicitudesCredito, PagosCredito
 from sistema.views import resultados_busqueda, admin_required
 from weasyprint import HTML
 import base64
-import tempfile
 from django.db.models import Sum, Count
 from django.views.decorators.csrf import csrf_exempt
+from django.core.serializers.json import DjangoJSONEncoder
+import json
 
 
 @csrf_exempt
@@ -34,8 +33,8 @@ def get_credit_details(request):
             "min_aporte": tipo_credito.tcredito_aporte_minimo,
         }
         return JsonResponse(response_data)
-    
-    
+
+
 @admin_required
 def consulta_garantias(request):
     usuarios = User.objects.all().order_by('last_name', 'first_name')
@@ -62,20 +61,27 @@ def consulta_garantias(request):
                                                                          'label': 'Activos'},
                                                                      {'value': 'inactivo',
                                                                          'label': 'Inactivos'},
-                                                                     ],
-    })
+                                                                 ],
+                                                                 })
+
 
 @admin_required
 def solicitud(request):
     usuarios = PerfilUsuario.objects.all().order_by('user__last_name', 'user__first_name')
     tipos_credito = TiposCredito.objects.filter(tcredito_estado=True)
+    tipo_credito_id = request.POST.get("sol_tipo_credito")
+    tipo_credito = get_object_or_404(TiposCredito, pk=tipo_credito_id)
     formas_pago = FormasPago.objects.filter(fpago_estado=True)
+    garante_id = request.POST.get("sol_nro_garante")
 
-    socio_seleccionado = None    
+    socio_seleccionado = None
     v_solicitud = Decimal('0.00')
     comision = ''
     v_encaje = ''
     monto_total = ''
+    suma_capital = Decimal('0.00')
+    suma_interes = Decimal('0.00')
+    suma_seguro = Decimal('0.00')
     valores_ingresados = {}
     tabla_amortizacion = []
 
@@ -98,6 +104,12 @@ def solicitud(request):
             valor_aportes=Sum("trans_valor")
         )
 
+        nro_aportes = aportes_info["nro_aportes"] or 0
+
+        if nro_aportes < tipo_credito.tcredito_aporte_minimo:
+                messages.error(request, f"El socio debe tener al menos {tipo_credito.tcredito_aporte_minimo} aportes.")
+                
+
         condicion = socio_seleccionado.nombramiento
         disponible = CuentasAhorros.objects.filter(ah_no_socio=socio_seleccionado).first()
         disponible_saldo = disponible.ah_saldo if disponible else Decimal("0.00")
@@ -113,38 +125,53 @@ def solicitud(request):
             "disponible": disponible_saldo,
             "nro_solicitud": nro_solicitud
         })
-           
+
+        request.session['valores_ingresados'] = {
+            "solicitud_id": nro_solicitud,
+        }
+
+     # Validar socio activo
+        if not socio_seleccionado.estado == True:
+            messages.error(request, "El socio seleccionado no está activo.")
+
+
+        # Si tiene garante, calcular S. Créditos
+        s_creditos = 0
+        if garante_id:
+            garante_seleccionado = get_object_or_404(PerfilUsuario, pk=garante_id)
+            s_creditos = CreditosAprobados.objects.filter(
+                socio=garante_seleccionado
+            ).aggregate(
+                total_saldo=Sum("cred_saldo")
+            )["total_saldo"] or 0
+
 
     # Acción calcular
     if request.method == "POST" and request.POST.get("accion") == "calcular":
         socio_id = request.POST.get("sol_socio")
-        socio_seleccionado = get_object_or_404(PerfilUsuario, pk=socio_id, user__is_active=True)
-        
-        tipo_credito_id = request.POST.get("sol_tipo_credito")        
-        tipo_credito = get_object_or_404(TiposCredito, pk=tipo_credito_id)
-        
+        socio_seleccionado = get_object_or_404( PerfilUsuario, pk=socio_id, user__is_active=True)
+
         monto = Decimal(request.POST.get("sol_monto", "0"))
         cuotas = int(request.POST.get("sol_cuotas", 0))
-        tasa_mensual = Decimal(tipo_credito.tcredito_tasa_interes) / Decimal(100) / 12 
+        tasa_mensual = Decimal(tipo_credito.tcredito_tasa_interes) / Decimal(100) / 12
         tasa_mensual = tasa_mensual.quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP)
-               
+
         comision_param = get_object_or_404(Parametros, parm_abreviatura="COMISION")
+        seguro_param = get_object_or_404(Parametros, parm_abreviatura="SEGRAVAMEN")
+        seguro_valor = Decimal(seguro_param.parm_valor) / Decimal(100)
         v_solicitud = monto
         comision = Decimal(comision_param.parm_valor) * cuotas
         v_encaje = (Decimal(tipo_credito.tcredito_porcentaje_encaje) / 100) * monto
 
-        saldo = monto        
+        saldo = monto
         tabla_amortizacion = []
-        suma_capital = Decimal("0.00")
-        suma_interes = Decimal("0.00")
-        suma_seguro = Decimal("0.00")
-        total_interes = Decimal("0.00")
         interes = Decimal("0.00")
         seguro = Decimal("0.00")
-        cuota = Decimal("0.00")    
+        cuota = Decimal("0.00")
 
-        for i in range(0, cuotas + 1):            
-            capital = (cuota - interes ).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)         
+        for i in range(0, cuotas + 1):
+
+            capital = (cuota - interes).quantize(Decimal('0.01'),rounding=ROUND_HALF_UP)
             saldo -= capital.quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP)
             tabla_amortizacion.append({
                 "numero": i,
@@ -155,21 +182,36 @@ def solicitud(request):
                 "cuota_total": round(cuota + interes + seguro, 2),
                 "saldo": round(saldo, 2)
             })
-            
+
             interes = (saldo * tasa_mensual).quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP)
-            seguro = saldo * Decimal("0.0005")            
-            cuota = (monto * tasa_mensual) / (Decimal(1) - (Decimal(1) + tasa_mensual) ** (-cuotas))
+            seguro = (saldo * seguro_valor).quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP)
+            cuota = (monto * tasa_mensual) / (Decimal(1) -(Decimal(1) + tasa_mensual) ** (-cuotas))
             cuota = cuota.quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP)
-            #monto_total = monto + comision + total_interes + seguro
-            #monto_total = cuota + seguro + interes
             suma_capital += capital
-            suma_interes += interes
-            suma_seguro += seguro
+            suma_interes += round(interes, 2)
+            suma_seguro += round(seguro, 2)
+            
+        monto_total = (v_solicitud + comision + suma_interes + suma_seguro).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
-        monto_total = round(v_solicitud + comision + suma_interes + suma_seguro,2)
+        request.session['valores_credito'] = {
+            "cuotas": str(cuotas),
+            "interes": str(tipo_credito.tcredito_tasa_interes),
+            "v_solicitud": str(v_solicitud),
+            "comision": str(comision),
+            "v_encaje": str(v_encaje),
+            "suma_capital": str(suma_capital),
+            "suma_interes": str(suma_interes),
+            "suma_seguro": str(suma_seguro),
+            "monto_total": str(monto_total),
+        }
+                
+        request.session['tabla_amortizacion'] = json.loads(json.dumps(tabla_amortizacion, cls=DjangoJSONEncoder))
+        
 
-  
+    # Acción guardar
+
     
+
     return render(request, 'operativo/solicitud.html', {
         'titulo': 'Operativo',
         'categoria_actual': 'operativo',
@@ -181,6 +223,9 @@ def solicitud(request):
         'v_solicitud': v_solicitud,
         'comision': comision,
         'v_encaje': v_encaje,
+        'suma_capital': suma_capital,
+        'suma_interes': suma_interes,
+        'suma_seguro': suma_seguro,
         'monto_total': monto_total,
         'socio_seleccionado': socio_seleccionado,
         'search_query': search_query,
@@ -190,9 +235,19 @@ def solicitud(request):
 
 def imprimir_solicitud_credito(request, socio_id):
     socio = get_object_or_404(PerfilUsuario, pk=socio_id)
-    html_string = render_to_string("pdf_solicitud_credito.html", {
+    tabla_amortizacion = request.session.get("tabla_amortizacion", [])
+    valores_credito = request.session.get("valores_credito", {})
+
+    solicitud_id = request.session.get("valores_ingresados", {}).get("solicitud_id")
+   
+
+    html_string = render_to_string("pdf/solicitud_credito.html", {
         "socio": socio,
         "fecha": date.today(),
+        "solicitud_id": solicitud_id,
+        "tabla_amortizacion": tabla_amortizacion,
+        **valores_credito,
+        
     })
     html = HTML(string=html_string)
     pdf = html.write_pdf()
@@ -200,39 +255,45 @@ def imprimir_solicitud_credito(request, socio_id):
     response['Content-Disposition'] = 'inline; filename="solicitud_credito.pdf"'
     return response
 
+
 @admin_required
 def calcular_amortizacion_francesa(monto, interes, cuotas, seguro, comision, encaje):
     amortizacion = []
-    monto_total = Decimal(monto) + (Decimal(monto) * Decimal(comision) / Decimal(100))  # Agregar comisión al monto inicial
+    # Agregar comisión al monto inicial
+    monto_total = Decimal(monto) + (Decimal(monto) *
+                                    Decimal(comision) / Decimal(100))
     saldo = monto_total
     interes_mensual = Decimal(interes) / Decimal(100) / 12
-    
+
     # Calcular cuota base sin seguros/encaje
-    cuota_base = saldo * (interes_mensual / (1 - (1 + interes_mensual) ** -int(cuotas)))
-    
+    cuota_base = saldo * (interes_mensual /
+                          (1 - (1 + interes_mensual) ** -int(cuotas)))
+
     # Valor fijo de comisión para mostrar en la tabla
     comision_valor = Decimal(monto) * Decimal(comision) / Decimal(100)
-    
+
     for i in range(0, int(cuotas) + 1):
         interes_mensual_valor = saldo * interes_mensual
         capital = cuota_base - interes_mensual_valor
-        
+
         # Calcular valores dinámicos cada mes
         seguro_mensual = saldo * Decimal(seguro) / Decimal(100)
-        
+
         saldo -= capital
-        
+
         amortizacion.append({
             'numero': i,
             'fecha_pago': (datetime.today() + timedelta(days=30 * i)).strftime('%Y-%m-%d'),
             'capital': round(capital, 2),
             'interes': round(interes_mensual_valor, 2),
             'seguro': round(seguro_mensual, 2),
-            'comision': round(comision_valor, 2) if i == 1 else Decimal('0.00'),  # Solo mostrar en primera cuota
+            # Solo mostrar en primera cuota
+            'comision': round(comision_valor, 2) if i == 1 else Decimal('0.00'),
             'cuota_total': round(cuota_base + seguro_mensual, 2),
             'saldo': round(saldo if saldo > 0 else Decimal('0.00'), 2),
         })
     return amortizacion
+
 
 @admin_required
 def generar_pdf_amortizacion(request):
@@ -248,13 +309,17 @@ def generar_pdf_amortizacion(request):
         except TiposCredito.DoesNotExist:
             encaje = Decimal(0)
 
-        comision = Parametros.objects.filter(parm_nombre__iexact='COMISION').first()
-        comision_valor = Decimal(comision.parm_valor) if comision else Decimal(0)
+        comision = Parametros.objects.filter(
+            parm_nombre__iexact='COMISION').first()
+        comision_valor = Decimal(
+            comision.parm_valor) if comision else Decimal(0)
 
-        seguro = Parametros.objects.filter(parm_nombre__iexact='SEGUROGRAV').first()
+        seguro = Parametros.objects.filter(
+            parm_nombre__iexact='SEGUROGRAV').first()
         seguro_valor = Decimal(seguro.parm_valor) if seguro else Decimal(0)
 
-        tabla_amortizacion = calcular_amortizacion_francesa(monto, interes, cuotas, seguro_valor, comision_valor, encaje)
+        tabla_amortizacion = calcular_amortizacion_francesa(
+            monto, interes, cuotas, seguro_valor, comision_valor, encaje)
 
         # Calcular totales para el resumen
         total_capital = sum(cuota['capital'] for cuota in tabla_amortizacion)
@@ -262,7 +327,8 @@ def generar_pdf_amortizacion(request):
         total_seguro = sum(cuota['seguro'] for cuota in tabla_amortizacion)
         total_encaje = sum(cuota['encaje'] for cuota in tabla_amortizacion)
         total_comision = sum(cuota['comision'] for cuota in tabla_amortizacion)
-        total_cuotas = sum(cuota['cuota_total'] for cuota in tabla_amortizacion)
+        total_cuotas = sum(cuota['cuota_total']
+                           for cuota in tabla_amortizacion)
 
         html_string = render_to_string('pdf_amortizacion.html', {
             'tabla_amortizacion': tabla_amortizacion,
@@ -283,9 +349,11 @@ def generar_pdf_amortizacion(request):
         response['Content-Disposition'] = 'inline; filename="amortizacion.pdf"'
         return response
 
+
 @admin_required
 def consulta_aprobacion(request):
     return render(request, 'operativo/consulta_aprobacion.html', {'titulo': 'Operativo', 'categoria_actual': 'operativo'})
+
 
 @admin_required
 def ahorros(request):
@@ -295,24 +363,27 @@ def ahorros(request):
 
         if not socio_id:
             messages.error(request, 'Debe seleccionar un socio válido.')
-            return redirect('ahorros')  
+            return redirect('ahorros')
 
         usuario = get_object_or_404(PerfilUsuario, user__id=socio_id)
 
         if accion == 'crear_cuenta':
             if CuentasAhorros.objects.filter(ah_no_socio=usuario).exists():
-                messages.warning(request, 'El socio ya tiene una cuenta de ahorros.')
+                messages.warning(
+                    request, 'El socio ya tiene una cuenta de ahorros.')
             else:
                 CuentasAhorros.objects.create(ah_no_socio=usuario, ah_saldo=0)
-                messages.success(request, 'Cuenta de ahorros creada correctamente.')
+                messages.success(
+                    request, 'Cuenta de ahorros creada correctamente.')
 
-            return redirect('ahorros')  
-        
+            return redirect('ahorros')
+
     return render(request, 'operativo/ahorros.html', {
         'titulo': 'Operativo',
         'categoria_actual': 'operativo',
-        
+
     })
+
 
 def obtener_saldo_usuario_por_id(user_id):
     """Obtiene el saldo actual de un socio por su user_id"""
@@ -323,6 +394,8 @@ def obtener_saldo_usuario_por_id(user_id):
         return saldo
     except Exception as e:
         return Decimal('0.00')
+
+
 @admin_required
 def obtener_saldo_usuario(request):
     """Obtiene el saldo actual de un socio"""
@@ -338,7 +411,8 @@ def obtener_saldo_usuario(request):
         except Exception as e:
             return JsonResponse({'saldo': '0.00'})
     return JsonResponse({'saldo': '0.00'})
-         
+
+
 def registrar_aporte(request):
     if request.method == 'POST':
         socio_id = request.POST.get('ah_no_socio')
@@ -346,7 +420,6 @@ def registrar_aporte(request):
 
         if not socio_id or not valor_aporte:
             return JsonResponse({'success': False, 'error': 'Datos incompletos'}, status=400)
-        
 
         try:
             usuario = get_object_or_404(PerfilUsuario, user__id=socio_id)
@@ -356,21 +429,21 @@ def registrar_aporte(request):
             cuenta.save()
 
             HistorialTransacciones.objects.create(
-            trans_usuario=usuario,
-            trans_tipo='ahorro',
-            trans_valor=aporte_decimal,
-            trans_saldo=cuenta.ah_saldo,
-            trans_fecha=datetime.now()
+                trans_usuario=usuario,
+                trans_tipo='ahorro',
+                trans_valor=aporte_decimal,
+                trans_saldo=cuenta.ah_saldo,
+                trans_fecha=datetime.now()
             )
 
-            
-            pdf_url = reverse('generar_recibo_pdf', args=[socio_id, valor_aporte])
+            pdf_url = reverse('generar_recibo_pdf', args=[
+                              socio_id, valor_aporte])
 
             return JsonResponse({
                 "success": True,
                 "usuario_id": socio_id,
                 "aporte": valor_aporte,
-                "pdf_url": pdf_url, 
+                "pdf_url": pdf_url,
             })
 
         except Exception as e:
@@ -378,19 +451,20 @@ def registrar_aporte(request):
 
     return JsonResponse({'success': False, 'error': 'Método no permitido'}, status=400)
 
+
 @xframe_options_exempt
 def generar_recibo_pdf(request, usuario_id, aporte):
     usuario = get_object_or_404(PerfilUsuario, user__id=usuario_id)
     cuenta = get_object_or_404(CuentasAhorros, ah_no_socio=usuario)
     ultima_transaccion = HistorialTransacciones.objects.order_by('-id').first()
-    numero_recibo = ultima_transaccion.id 
+    numero_recibo = ultima_transaccion.id
 
     context = {
         'fecha': datetime.now(),
         'id': usuario.user.id,
         'nombres': f'{usuario.user.first_name} {usuario.user.last_name}',
         'valor_aporte': aporte,
-        'saldo': cuenta.ah_saldo,        
+        'saldo': cuenta.ah_saldo,
         'numero_recibo': numero_recibo,
         'nombre_empresa': "Caja de Ahorro y Crédito CAPUPEC",
         'logo_url': request.build_absolute_uri('/static/img/logo.png'),
@@ -408,25 +482,31 @@ def generar_recibo_pdf(request, usuario_id, aporte):
 def ahorro_futuro(request):
     return render(request, 'operativo/ahorro_futuro.html', {'titulo': 'Operativo', 'categoria_actual': 'operativo'})
 
+
 @admin_required
 def deb_cetificados(request):
     return render(request, 'operativo/deb_cetificados.html', {'titulo': 'Operativo', 'categoria_actual': 'operativo'})
+
 
 @admin_required
 def pagos_rol(request):
     return render(request, 'operativo/pagos_rol.html', {'titulo': 'Operativo', 'categoria_actual': 'operativo'})
 
+
 @admin_required
 def caja(request):
     return render(request, 'operativo/caja.html', {'titulo': 'Operativo', 'categoria_actual': 'operativo'})
+
 
 @admin_required
 def reportes(request):
     return render(request, 'operativo/reportes.html', {'titulo': 'Operativo', 'categoria_actual': 'operativo'})
 
+
 @admin_required
 def cierre_diario(request):
     return render(request, 'operativo/cierre_diario.html', {'titulo': 'Operativo', 'categoria_actual': 'operativo'})
+
 
 @admin_required
 def distrib_excedente(request):
@@ -434,15 +514,16 @@ def distrib_excedente(request):
 
 
 @admin_required
-def reporte_socios_pdf(request):    
-    
-    socios = PerfilUsuario.objects.filter(rol__rol_nombre__iexact='Socio').order_by('user__last_name', 'user__first_name')    
+def reporte_socios_pdf(request):
+
+    socios = PerfilUsuario.objects.filter(rol__rol_nombre__iexact='Socio').order_by(
+        'user__last_name', 'user__first_name')
     representantes = Representantes.objects.first()
-    
+
     total_socios = socios.count()
     socios_activos = socios.filter(estado=True).count()
     socios_inactivos = socios.filter(estado=False).count()
-    
+
     # Convertir logo a base64 para incluir en PDF
     logo_base64 = ""
     try:
@@ -451,23 +532,26 @@ def reporte_socios_pdf(request):
             os.path.join(settings.BASE_DIR, 'static', 'img', 'logo.png'),
             os.path.join(settings.BASE_DIR, 'staticfiles', 'img', 'logo.png'),
         ]
-        
+
         if hasattr(settings, 'STATIC_ROOT') and settings.STATIC_ROOT:
-            possible_paths.insert(0, os.path.join(settings.STATIC_ROOT, 'img', 'logo.png'))
-        
+            possible_paths.insert(0, os.path.join(
+                settings.STATIC_ROOT, 'img', 'logo.png'))
+
         if hasattr(settings, 'STATICFILES_DIRS') and settings.STATICFILES_DIRS:
             for static_dir in settings.STATICFILES_DIRS:
-                possible_paths.insert(0, os.path.join(static_dir, 'img', 'logo.png'))
-        
+                possible_paths.insert(0, os.path.join(
+                    static_dir, 'img', 'logo.png'))
+
         for logo_path in possible_paths:
             if os.path.exists(logo_path):
                 with open(logo_path, 'rb') as logo_file:
-                    logo_base64 = base64.b64encode(logo_file.read()).decode('utf-8')
+                    logo_base64 = base64.b64encode(
+                        logo_file.read()).decode('utf-8')
                 break
     except Exception as e:
         # Si no se puede cargar el logo, continuar sin él
         pass
-    
+
     # Renderizar template HTML
     html_string = render_to_string('pdf/reporte_socios.html', {
         'socios': socios,
@@ -481,10 +565,10 @@ def reporte_socios_pdf(request):
         'titulo_documento': 'Reporte de Socios - CAPUPEC',
         'info_adicional': f'Total de registros: {total_socios}',
     })
-    
+
     # Generar PDF
     pdf_file = HTML(string=html_string).write_pdf()
-    
+
     response = HttpResponse(pdf_file, content_type='application/pdf')
     response['Content-Disposition'] = f'inline; filename="reporte_socios_{datetime.now().strftime("%Y%m%d_%H%M")}.pdf"'
     return response

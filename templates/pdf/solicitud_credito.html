@@ -1,0 +1,52 @@
+{% extends 'pdf/base_reporte.html' %}
+
+{% block contenido_reporte %}
+<h2>Solicitud de Crédito</h2>
+<p><strong>Número de Solicitud:</strong> {{ solicitud_id }}</p>
+<p><strong>Fecha de Solicitud:</strong> {{ fecha }}</p>
+<p><strong>No. Cédula:</strong> {{ socio.cedula }}</p>
+<p><strong>Socio:</strong> {{ socio.user.get_full_name }}</p>
+<p><strong>Monto del Crédito:</strong> {{ v_solicitud }}</p>
+<p><strong>Plazo(meses):</strong> {{ cuotas }}</p>
+<p><strong>Interés Anual:</strong> {{ interes }} %</p>
+<p><strong>Comisión:</strong> {{ comision }}</p>
+<p><strong>Valor del Encaje:</strong> {{ v_encaje }}</p>
+<p><strong>Monto a Pagar:</strong> {{ monto_total }}</p>
+
+<hr>
+<table border="1" cellspacing="0" cellpadding="4">
+    <thead>
+        <tr>
+            <th>N°</th>
+            <th>Fecha de Pago</th>
+            <th>Capital</th>
+            <th>Interés</th>
+            <th>Seguro</th>
+            <th>Cuota Total</th>
+            <th>Saldo</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cuota in tabla_amortizacion %}
+        <tr>
+            <td>{{ cuota.numero }}</td>
+            <td>{{ cuota.fecha_pago }}</td>
+            <td>{{ cuota.capital }}</td>
+            <td>{{ cuota.interes }}</td>
+            <td>{{ cuota.seguro }}</td>
+            <td>{{ cuota.cuota_total }}</td>
+            <td>{{ cuota.saldo }}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="2"><strong>Totales</strong></td>
+            <td>{{ suma_capital }}</td>
+            <td>{{ suma_interes }}</td>
+            <td>{{ suma_seguro }}</td>
+            <td> </td>
+            <td> </td>
+    </tbody>
+    
+</table>
+{% endblock %}
+

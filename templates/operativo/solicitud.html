@@ -210,8 +210,7 @@
 
                     <!-- Botones -->
                     <div class="d-flex justify-content-end gap-2">
-                        <button type="button" id="btn-calcular" class="btn btn-warning">Calcular</button>
-
+                        <button type="button" id="btn-calcular" class="btn btn-success">Calcular</button>
                         <button type="submit" class="btn btn-primary">Guardar</button>
                         <button type="reset" class="btn btn-secondary">Limpiar</button>
                     </div>
@@ -236,17 +235,11 @@
                         </div>
                         <div class="col-md-4 d-flex align-items-end">
 
-
-                            <button type="submit" class="btn btn-outline-primary w-100">
-                                <i class="fas fa-print"></i> Imprimir
-                            </button>
-
                             <button type="button" id="btn-imprimir" class="btn btn-outline-primary w-100"
                                 data-socio-id="{{ socio_seleccionado.id|default:'' }}">
                                 <i class="fas fa-print"></i> Imprimir
                             </button>
-
-
+                            <!--<button type="button" id="btn-imprimir" class="btn btn-success">Imprimir</button>-->
 
 
 
@@ -280,6 +273,13 @@
                                     <td>{{ cuota.saldo }}</td>
                                 </tr>
                                 {% endfor %}
+                                <tr>
+                                    <td colspan="2" class="text-end fw-bold">Totales:</td>
+                                    <td>{{ suma_capital }}</td>
+                                    <td>{{ suma_interes }}</td>
+                                    <td>{{ suma_seguro }}</td>
+                                    <td></td>
+                                    <td></td>
                             </tbody>
                         </table>
                     </div>
@@ -306,6 +306,5 @@
         inicializarAutocompleteConId("#nombre_garante", "{% url 'buscar_usuarios' %}", "#num_garante");
     });
 </script>
-<script src="{% static 'js/scripts.js' %}"></script>
 
 {% endblock %}
