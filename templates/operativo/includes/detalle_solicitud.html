@@ -1,0 +1,69 @@
+
+
+<div class="modal-header">
+  <h5 class="modal-title" id="detalleSolicitudModalLabel">
+    Detalle de Solicitud #{{ solicitud.sol_nro_solicitud }}
+  </h5>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+</div>
+
+<div class="modal-body px-4">
+  <div class="row border rounded p-3 mb-3">
+      <p><strong>Cédula:</strong> {{ solicitud.sol_socio.user.username }}</p>
+      <p><strong>Nombre:</strong> {{ solicitud.sol_socio.user.first_name }} {{ solicitud.sol_socio.user.last_name }}</p>      
+      <p><strong>Nombramiento:</strong> {{ nombramiento }}</p> 
+  </div>
+  
+  <div class="row border rounded p-3">
+    <p><strong>Tipo de crédito:</strong> {{ solicitud.sol_tipo_credito.tcredito_tipo }}</p>
+    <!-- Columna izquierda -->
+    <div class="col-md-6">
+      <p><strong>Monto solicitado:</strong> ${{ solicitud.sol_monto|floatformat:2 }}</p>
+      <p><strong>Cuotas solicitadas:</strong> {{ solicitud.sol_cuotas }}</p>
+      <p><strong>Aportes del socio:</strong> {{ cantidad_aportes }}</p>
+      <p><strong>Saldo disponible:</strong> ${{ saldo_disponible }}</p>
+      <p><strong>Estado actual:</strong>
+        <span class="badge 
+          {% if solicitud.sol_estado.estado_nombre == 'Pendiente' %} bg-warning text-dark
+          {% elif solicitud.sol_estado.estado_nombre == 'Aprobado' %} bg-success
+          {% elif solicitud.sol_estado.estado_nombre == 'Preaprobado' %} bg-primary
+          {% else %} bg-danger {% endif %}">
+          {{ solicitud.sol_estado.estado_nombre }}
+        </span>
+      </p>
+    </div>
+
+    <!-- Columna derecha -->
+    <div class="col-md-6">  
+      <p><strong>Monto máximo del crédito:</strong> ${{ solicitud.sol_tipo_credito.tcredito_monto_maximo|floatformat:2 }}</p>
+      <p><strong>Cuotas máximas permitidas:</strong> {{ solicitud.sol_tipo_credito.tcredito_num_cuotas }}</p>
+      <p><strong>Aportes mínimos requeridos:</strong> {{ solicitud.sol_tipo_credito.tcredito_aporte_minimo }}</p>
+      <!--<p><strong>Créditos activos:</strong> {{ cantidad_creditos }}</p>
+      <p><strong>Saldo total créditos activos:</strong> ${{ saldo_creditos|floatformat:2 }}</p>-->
+      <p><strong>Valor de encaje:</strong> ${{ solicitud.sol_valor_encaje|floatformat:2 }}</p>
+      <p><strong>Observaciones:</strong> {{ solicitud.sol_observacion}}</p>
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+  {% if solicitud.sol_estado.estado_nombre == 'Pendiente' %}
+    <button type="button" class="btn btn-success" onclick="actualizarEstado({{ solicitud.id }}, 'aprobar')">
+      <i class="bi bi-check-circle"></i> Aprobar
+    </button>
+    <button type="button" class="btn btn-warning text-white" onclick="actualizarEstado({{ solicitud.id }}, 'preaprobar')">
+      <i class="bi bi-check-circle"></i> Preaprobar
+    </button>
+    <button type="button" class="btn btn-danger" onclick="actualizarEstado({{ solicitud.id }}, 'rechazar')">
+      <i class="bi bi-x-circle"></i> Rechazar
+    </button>
+  {% elif solicitud.sol_estado.estado_nombre == 'Preaprobado' %}
+    <button type="button" class="btn btn-success" onclick="actualizarEstado({{ solicitud.id }}, 'aprobar')">
+      <i class="bi bi-check-circle"></i> Aprobar
+    </button>
+    <button type="button" class="btn btn-danger" onclick="actualizarEstado({{ solicitud.id }}, 'rechazar')">
+      <i class="bi bi-x-circle"></i> Rechazar
+    </button>
+  {% endif %}
+  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+</div>

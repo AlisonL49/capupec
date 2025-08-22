@@ -71,9 +71,9 @@ class SolicitudesCredito(models.Model):
     sol_monto_total = models.DecimalField(max_digits=10, decimal_places=2)
     sol_garante = models.BooleanField(default=False)
     sol_nro_garante = models.IntegerField(null=True, blank=True)
-    sol_saldo_credito = models.DecimalField(max_digits=10, decimal_places=2)
     sol_fecha_solicitud = models.DateField(default=timezone.now)
     sol_estado = models.ForeignKey(estadosSolicitud, on_delete=models.CASCADE)
+    sol_observacion = models.TextField(null=True, blank=True, default=" ")
 
 
 
@@ -109,6 +109,7 @@ class CreditosAprobados(models.Model):
     credito_solicitud = models.ForeignKey(SolicitudesCredito, on_delete=models.CASCADE)
     credito_usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     credito_fecha_aprobacion = models.DateField(default=timezone.now)
+    credito_saldo = models.DecimalField(max_digits=10, decimal_places=2)
     credito_estado = models.BooleanField(default=True)
 
     def __str__(self):

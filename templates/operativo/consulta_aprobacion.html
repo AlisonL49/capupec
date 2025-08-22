@@ -1,227 +1,202 @@
-{% extends 'navbar.html' %}
-
+{% extends "navbar.html" %}
+{% load static %}
 {% block content %}
 
+<style>
+    /* Pestaña activa: azul y negrita */
+    .nav-tabs .nav-link.active {
+        color: #6c757d !important;
+        /* Azul Bootstrap */
+        font-weight: bold;
+    }
+
+    /* Pestaña inactiva: gris claro */
+    .nav-tabs .nav-link {
+        color: #adb5bd !important;
+        /* Gris claro */
+        font-weight: normal;
+    }
+
+    /* Al pasar el mouse sobre las inactivas */
+    .nav-tabs .nav-link:hover {
+        color: #6c757d !important;
+        /* Gris medio */
+    }
+</style>
 
 <div class="container mt-4">
-    <!-- Encabezado -->
-    <div class="card border-secondary">
-        <div class="card-header text-dark d-flex " style="background-color: #f5ea41">
-            <h5 class="mb-0">Créditos</h5>
+    <div class="card ">
+        <div class="card-custom-header  d-flex">
+            <h5 class="mb-0">Consultas de Solicitudes y Créditos </h5>
         </div>
-        
         <div class="card-body">
-            <!-- Aprobación -->
-            <div class="mb-3">
-                <h6>Aprobación</h6>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="consulta">
-                    <label class="form-check-label" for="consulta">Consulta</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="nroSolicitud">
-                    <label class="form-check-label" for="nroSolicitud">Nro. Solicitud</label>
-                </div>
-            </div>
 
-            <!-- Tabla de Aprobación -->
-            <div class="table-responsive mb-3">
-                <table class="table table-bordered table-striped text-center">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>NOMBRES</th>
-                            <th>IDENTIFICACION</th>
-                            <th>Aprobar</th>
-                            <th>Anular</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Juan Pérez</td>
-                            <td>1234567890</td>
-                            <td><button class="btn btn-success">Aprobar</button></td>
-                            <td><button class="btn btn-danger">Anular</button></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <!-- Pestañas -->
+            <ul class="nav nav-tabs" id="creditoTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="solicitudes-tab" data-bs-toggle="tab"
+                        data-bs-target="#solicitudes" type="button" role="tab">
+                        Solicitudes
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="aprobados-tab" data-bs-toggle="tab" data-bs-target="#aprobados"
+                        type="button" role="tab">
+                        Créditos Aprobados
+                    </button>
+                </li>
+            </ul>
 
-            <!-- Tabla de Créditos -->
-            <div class="table-responsive mb-3">
-                <table class="table table-bordered table-striped text-center">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>NCREDITO</th>
-                            <th>MONTO</th>
-                            <th>SALDO</th>
-                            <th>ESTA</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>001</td>
-                            <td>5000.00</td>
-                            <td>2000.00</td>
-                            <td>Activo</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <div class="tab-content mt-3" id="creditoTabsContent">
 
-            <!-- Detalles del Crédito -->
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="nombres" class="form-label">Nombres</label>
-                    <input type="text" id="nombres" class="form-control">
-                </div>
-                <div class="col-md-6">
-                    <label for="nroCedula" class="form-label">Nro. Cédula</label>
-                    <input type="text" id="nroCedula" class="form-control">
-                </div>
-            </div>
+                <!-- TAB Solicitudes -->
+                <div class="tab-pane fade show active" id="solicitudes" role="tabpanel">
 
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <label for="noSocio" class="form-label">No. Socio</label>
-                    <input type="text" id="noSocio" class="form-control">
-                </div>
-                <div class="col-md-4">
-                    <label for="tInteres" class="form-label">T Interés</label>
-                    <input type="text" id="tInteres" class="form-control">
-                </div>
-                <div class="col-md-4">
-                    <label for="formaPago" class="form-label">Forma de Pago</label>
-                    <input type="text" id="formaPago" class="form-control">
-                </div>
-            </div>
+                    <!-- Buscador -->
+                    <form method="get" class="d-flex mb-3">
+                        <input type="text" name="q" class="form-control me-2" placeholder="Buscar por cédula..."
+                            value="{{ request.GET.q }}">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="bi bi-search"></i> Buscar
+                        </button>
+                    </form>
 
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <label for="tipoCredito" class="form-label">Tipo Crédito</label>
-                    <input type="text" id="tipoCredito" class="form-control">
-                </div>
-                <div class="col-md-4">
-                    <label for="monto" class="form-label">Monto</label>
-                    <input type="text" id="monto" class="form-control">
-                </div>
-                <div class="col-md-4">
-                    <label for="cuotas" class="form-label">Cuotas</label>
-                    <input type="text" id="cuotas" class="form-control">
-                </div>
-            </div>
+                    <!-- Tabla -->
+                    <div class="table-responsive">
+                        <table
+                            class="table table-bordered table-hover rounded table-striped align-middle text-center overflow-hidden ">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th>No. Solicitud</th>
+                                    <th>Fecha</th>
+                                    <th>Cédula</th>
+                                    <th>Nombre completo</th>
+                                    <th>Monto solicitado</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for solicitud in page_obj %}
+                                <tr>
+                                    <td>{{ solicitud.sol_nro_solicitud }}</td>
+                                    <td>{{ solicitud.sol_fecha_solicitud }}</td>
+                                    <td>{{ solicitud.sol_socio.user.username }}</td>
+                                    <td>{{ solicitud.sol_socio.user.first_name }} {{ solicitud.sol_socio.user.last_name }}</td>
+                                    <td>${{ solicitud.sol_monto|floatformat:2 }}</td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if solicitud.sol_estado.estado_nombre == 'Pendiente' %} bg-warning bg-opacity-50 text-dark
+                                            {% elif solicitud.sol_estado.estado_nombre == 'Aprobado' %} bg-success bg-opacity-75
+                                            {% elif solicitud.sol_estado.estado_nombre == 'Preaprobado' %} bg-primary bg-opacity-50 text-dark
+                                            {% elif solicitud.sol_estado.estado_nombre == 'Rechazado' %} bg-danger bg-opacity-75
+                                            {% else %} bg-secondary {% endif %}">
+                                            {{ solicitud.sol_estado.estado_nombre }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary"
+                                            onclick="verDetalleSolicitud({{ solicitud.id }})" title="Ver Detalles">
+                                            <i class="fas fa-info"></i>
+                                        </button>
 
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <label for="tipoTabla" class="form-label">Tipo Tabla</label>
-                    <input type="text" id="tipoTabla" class="form-control">
-                </div>
-                <div class="col-md-4">
-                    <label for="destino" class="form-label">Destino</label>
-                    <input type="text" id="destino" class="form-control" value="FRANCESA">
-                </div>
-                <div class="col-md-4">
-                    <label for="gracia" class="form-label">Gracia</label>
-                    <input type="text" id="gracia" class="form-control">
-                </div>
-            </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted">No se encontraron solicitudes</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
 
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <label for="saldo" class="form-label">Saldo</label>
-                    <input type="text" id="saldo" class="form-control">
-                </div>
-                <div class="col-md-4">
-                    <label for="estado" class="form-label">Estado</label>
-                    <input type="text" id="estado" class="form-control">
-                </div>
-                <div class="col-md-4">
-                    <label for="fUltPago" class="form-label">F. Ult. Pago</label>
-                    <input type="text" id="fUltPago" class="form-control">
-                </div>
-            </div>
+                        <!-- Controles de paginación -->
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}">Anterior</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+                                {% endif %}
 
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="nombresGarante" class="form-label">Nombres Garante</label>
-                    <input type="text" id="nombresGarante" class="form-control">
-                </div>
-                <div class="col-md-3">
-                    <label for="porcentajePagado" class="form-label">% Pagado</label>
-                    <input type="text" id="porcentajePagado" class="form-control">
-                </div>
-                <div class="col-md-3">
-                    <label for="tCancela" class="form-label">T.Cancela</label>
-                    <input type="text" id="tCancela" class="form-control">
-                </div>
-            </div>
+                                {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                                {% else %}
+                                    <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}&q={{ search_query }}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                                {% endfor %}
 
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <label for="renovar" class="form-label">Renovar</label>
-                    <input type="text" id="renovar" class="form-control">
-                </div>
-                <div class="col-md-4">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="mantenerCuota">
-                        <label class="form-check-label" for="mantenerCuota">Mantener Cuota</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="disminuirCuota">
-                        <label class="form-check-label" for="disminuirCuota">Disminuir Cuota</label>
+                                {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}">Siguiente</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+                                {% endif %}
+                            </ul>
+                        </nav>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <button class="btn btn-primary">Cambiar</button>
-                </div>
-            </div>
 
-            <!-- Opciones adicionales -->
-            <div class="mb-3">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="tAmortizacion">
-                    <label class="form-check-label" for="tAmortizacion">T.Amortización</label>
+                <!-- TAB Créditos Aprobados -->
+                <div class="tab-pane fade" id="aprobados" role="tabpanel">
+                    <p class="text-muted">Aquí se mostrarán los créditos aprobados...</p>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="tPagos">
-                    <label class="form-check-label" for="tPagos">T.Pagos</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="consultar">
-                    <label class="form-check-label" for="consultar">Consultar</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="imprimir">
-                    <label class="form-check-label" for="imprimir">Imprimir</label>
-                </div>
-            </div>
 
-            <!-- Tabla de Dividendos -->
-            <div class="table-responsive mb-3">
-                <table class="table table-bordered table-striped text-center">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>DIVIDENDO</th>
-                            <th>FECHA VENCE</th>
-                            <th>CAPITAL</th>
-                            <th>INTERÉS</th>
-                            <th>SA</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>2023-10-01</td>
-                            <td>100.00</td>
-                            <td>10.00</td>
-                            <td>90.00</td>
-                        </tr>
-                    </tbody>
-                </table>
             </div>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Modal vacío -->
+<div class="modal fade" id="detalleSolicitudModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="detalleSolicitudContent">
+            <!-- Aquí se carga el detalle por AJAX -->
+        </div>
+    </div>
+</div>
+<!-- Modal Detalle Solicitud -->
+<div class="modal fade" id="detalleSolicitudModal" tabindex="-1" aria-labelledby="detalleSolicitudModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" id="detalleSolicitudContent">
+      <!-- Aquí se cargará el detalle_solicitud.html vía fetch -->
+    </div>
+  </div>
+</div>
+
+<!-- Archivo de scripts global -->
+<script src="{% static 'js/scripts.js' %}"></script>
+
+
+<!--<script>
+function verDetalleSolicitud(id) {
+  fetch(`/operativo/consulta/${id}/detalle/`)
+    .then(response => response.text())
+    .then(html => {
+      document.getElementById("detalleSolicitudContent").innerHTML = html;
+      new bootstrap.Modal(document.getElementById("detalleSolicitudModal")).show();
+    });
+}
+
+function actualizarEstado(id, accion) {
+  fetch(`/consulta/${id}/${accion}/`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert("Solicitud " + data.estado);
+        location.reload();
+      } else {
+        alert("Error: " + data.error);
+      }
+    });
+}
+</script>-->
+
 
 {% endblock %}

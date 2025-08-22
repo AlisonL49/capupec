@@ -171,6 +171,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const accionInput = document.getElementById("accion");
     const btnCalcular = document.querySelector("#btn-calcular");
     const btnImprimir = document.querySelector("#btn-imprimir");
+    const btnGuardar = document.querySelector("#btn-guardar");
+    
 
     if (solicitudForm) {
         // Botón Calcular
@@ -182,8 +184,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
 
-        // Botón Imprimir
-        
+        // Botón Imprimir        
         if (btnImprimir) {
             btnImprimir.addEventListener("click", function (e) {
                 e.preventDefault();
@@ -195,6 +196,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
         }
+
+        // Botón Guardar
+        if (btnGuardar) {
+            btnGuardar.addEventListener("click", function (e) {
+                e.preventDefault();
+                $('#confirmSaveModal').modal('show'); // Open modal
+            });
+
+            document.querySelector("#confirmSaveModal #confirmSaveButton").addEventListener("click", function() {
+                accionInput.value = "guardar";
+                solicitudForm.submit(); // Submit form after confirmation
+            });
+        }
+
     }
 
     // ---------------- SOLICITUD DE CRÉDITO: ACTUALIZAR DETALLES ----------------
@@ -218,5 +233,100 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
-});
 
+    //--------------------------MODAL DE DETALLE DE SOLICITUD EN CONSULTAS----------------------------
+
+    window.verDetalleSolicitud = function (id) {
+        fetch(`/operativo/consulta/${id}/detalle/`)
+            .then(response => response.text())
+            .then(html => {
+            document.getElementById("detalleSolicitudContent").innerHTML = html;
+            new bootstrap.Modal(document.getElementById("detalleSolicitudModal")).show();
+            });
+        }
+    window.actualizarEstado = function (id, accion) {
+        if (accion === "rechazar") {
+            let observacion = prompt("Ingrese la observación para rechazar esta solicitud:");
+            if (!observacion) {
+            alert("Debe ingresar una observación.");
+            return;
+            }
+
+            fetch(`/operativo/consulta/${id}/rechazar/`, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken"),
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: "observacion=" + encodeURIComponent(observacion)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                alert("Solicitud rechazada con observación.");
+                location.reload();
+                } else {
+                alert("Error: " + data.error);
+                }
+            });
+
+        } else if (accion === "preaprobar") {
+            let observacion = prompt("Ingrese una observación de preaprobación");
+            if (!observacion) {
+            alert("Debe ingresar una observación.");
+            return;
+            }
+
+            fetch(`/operativo/consulta/${id}/preaprobar/`, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken"),
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: "observacion=" + encodeURIComponent(observacion)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                alert("Solicitud preaprobada con observación.");
+                location.reload();
+                } else {
+                alert("Error: " + data.error);
+                }
+            });
+
+        }else {
+            fetch(`/operativo/consulta/${id}/${accion}/`, {
+            method: "POST",
+            headers: { "X-CSRFToken": getCookie("csrftoken") }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                alert("Solicitud " + data.estado);
+                location.reload();
+                } else {
+                alert("Error: " + data.error);
+                }
+            });
+        }
+    }
+
+    // Helper para CSRF (si usas Django con fetch POST)
+    function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === name + "=") {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+        }
+        }
+    }
+    return cookieValue;
+    }
+
+
+});

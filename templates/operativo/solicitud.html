@@ -120,7 +120,7 @@
                             <select id="tipo_credito" name="sol_tipo_credito" class="form-select">
                                 <option value="">Seleccione ...</option>
                                 {% for credito in tipos_credito %}
-                                <option value="{{ credito.id }}">
+                                <option value="{{ credito.id }}" {% if credito.id|stringformat:"s" == valores_ingresados.selected_tipo_credito|stringformat:"s" %}selected{% endif %}>
                                     {{ credito.tcredito_tipo }}
                                 </option>
                                 {% endfor %}
@@ -134,7 +134,7 @@
                             <select id="forma_pago" name="sol_forma_pago" class="form-select">
                                 <option value="">Seleccione ...</option>
                                 {% for pago in formas_pago %}
-                                <option value="{{ pago.id }}">
+                                <option value="{{ pago.id }}" {% if valores_ingresados.selected_forma_pago == pago.id|stringformat:"s" %}selected{% endif %}>
                                     {{ pago.fpago_descripcion }}</option>
                                 {% endfor %}
                             </select>
@@ -211,7 +211,7 @@
                     <!-- Botones -->
                     <div class="d-flex justify-content-end gap-2">
                         <button type="button" id="btn-calcular" class="btn btn-success">Calcular</button>
-                        <button type="submit" class="btn btn-primary">Guardar</button>
+                        <button type="submit" id="btn-guardar" class="btn btn-primary">Guardar</button>
                         <button type="reset" class="btn btn-secondary">Limpiar</button>
                     </div>
 
@@ -287,6 +287,25 @@
             </form>
         </div>
     </div>
+</div>
+
+<!-- Confirmation Modal HTML -->
+<div class="modal fade" id="confirmSaveModal" tabindex="-1" aria-labelledby="confirmSaveModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmSaveModalLabel">Confirmar Guardar</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        ¿Está seguro de que desea guardar la solicitud?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" id="confirmSaveButton" class="btn btn-primary">Guardar</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 
